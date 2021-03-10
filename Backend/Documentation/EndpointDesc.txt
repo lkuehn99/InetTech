@@ -1,0 +1,352 @@
+swagger: "2.0"
+info:
+  description: "Protokoll Verwaltung"
+  version: "1.0.0"
+  title: "Protokoll Verwaltung"
+# host: "petstore.swagger.io"
+# basePath: "/v2"
+tags:
+- name: "User"
+  description: "Operations regarding users"
+  externalDocs:
+    description: "Find out more"
+    url: "http://swagger.io"
+    
+- name: "Calendar"
+  description: "Operations regarding the calendar"
+
+- name: "Admin"
+  description: "administrative tasks"
+    
+schemes:
+- "https"
+paths:
+  /User/add:
+    post:
+      tags:
+      - "User"
+      summary: "Create a new user"
+      description: ""
+      operationId: "createBaUser"
+      consumes:
+      - "application/json"
+      # should be replaced with headers in the returned status code to indicate that a user e.x. already exists
+      # produces:
+      # - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Required fields to create User"
+        required: true
+        schema:
+          $ref: "#/definitions/BAUser"
+      responses:
+        "761":
+          description: "User already exists"
+        "983":
+          description: "Missing one or more fields"
+      
+  /User/login:
+    post:
+      tags:
+      - "User"
+      summary: "Log in as User"
+      description: ""
+      operationId: "logintoUser"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Username and password"
+        required: true
+        schema: 
+          $ref: "#/definitions/BALoginUser"
+      responses:
+        "405":
+          description: "Invalid input"
+  /User/forgotpw:
+    get:
+      tags:
+      - "User"
+      summary: "Forgot Password"
+      description: ""
+      operationId: "forgotPassword"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Users email"
+        required: true
+        schema: 
+          type: "string"
+          format: "email"
+      responses:
+        "405":
+          description: "Invalid input"
+  /User/changepw:
+    put:
+      tags:
+      - "User"
+      summary: "Change Password"
+      description: ""
+      operationId: "changePassword"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Users current password"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            username:
+              type: "string"
+            password:
+              type: "string"
+      responses:
+        "405":
+          description: "Invalid input"
+  /Calendar/returnListview:
+    get:
+      tags:
+      - "Calendar"
+      summary: "Return list view"
+      description: ""
+      operationId: "returnListView"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Username"
+        required: true
+        schema:
+          $ref: "#/definitions/moduleEvent"
+      responses:
+        "405":
+          description: "Invalid input"
+          
+  /Calendar/editCalendar:
+    put:
+      tags:
+      - "Calendar"
+      summary: "Edit Calendar"
+      description: ""
+      operationId: "editCalendar"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "edited Module Event"
+        required: true
+        schema:
+          $ref: "#/definitions/moduleEvent"
+      responses:
+        "405":
+          description: "Invalid input"
+          
+  /Calendar/processAbsence:
+    put:
+      tags:
+      - "Calendar"
+      summary: "Add absence for user"
+      description: ""
+      operationId: "addAbsence"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "User and time of absence"
+        required: true
+        schema:
+          type: "object"
+          properties: 
+            username:
+              type: "string"
+            startOfAbsence:
+              type: "string"
+              format: "date-time" 
+            endAbsence:
+              type: "string"
+              format: "date-time"
+      responses:
+        "405":
+          description: "Invalid Input"
+            
+  /Admin/createModule:
+    post:
+      tags:
+      - "Admin"
+      summary: "Create new Module"
+      description: ""
+      operationId: "createModule"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "add new Module"
+        required: true
+        schema:
+          $ref: "#/definitions/module"
+      responses:
+        "405":
+          description: "Invalid Input"
+  /Admin/createCourse:
+    post:
+      tags:
+      - "Admin"
+      summary: "Create new course"
+      description: ""
+      operationId: "createCourse"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "object of new course"
+        required: true
+        schema:
+          $ref: "#/definitions/courseGroup"
+      responses:
+        "405":
+          description: "Invalid Input"
+  
+  /Admin/importLectureList:
+    post:
+      tags:
+      - "Admin"
+      summary: "Import lecture List"
+      description: ""
+      operationId: "importLectureList"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "ics-File to import"
+        required: true
+        schema:
+          type: "object"
+          properties: 
+            content:
+              type: "string"
+      responses:
+        "405":
+          description: "Invalid Input"
+  /User/getUserInfo:
+    get:
+      tags:
+      - "User"
+      summary: "Get Info about User"
+      description: ""
+      operationId: "getUserInfo"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: query
+        name: "username"
+        type: "string"
+        description: "Username"
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/BAUser"
+        "405":
+          description: "Invalid Input"
+        
+      
+
+definitions:
+  BAUser:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+        format: "email"
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
+      username:
+        type: "string"
+      password:
+        type: "string"
+      role:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - Student
+          - Kurssprecher
+          - Dozent
+          - Admin
+      selectedModules: 
+        type: "array"
+        items:
+          #IDs of modules chosen by specified user
+          type: "integer"
+  BALoginUser:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      password:
+        type: "string"
+  module:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name:
+        type: "string"
+      lecturer:
+        type: "array"
+        items: 
+          #username of lecturer
+          type: "string"
+      mandatory:
+        type: "boolean"
+  moduleEvent:
+    type: "object"
+    properties:
+      id: 
+        type: "integer"
+      ofModule:
+        $ref: "#/definitions/module"
+      startTime:
+        type: "string"
+        format: "date-time"
+      endTime:
+        type: "string"
+        format: "date-time"
+      heldBy:
+        type: "string"
+  courseGroup:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name:
+        type: "string"
+      members:
+        type: "array"
+        items:
+          #usernames of members
+          type: "string"
+      optionalModules:
+        type: "array"
+        items:
+          #IDs of Modules
+          type: "integer"
+      mandatoryModules:
+        type: "array"
+        items:
+          #IDs of Modules
+          type: "integer"
