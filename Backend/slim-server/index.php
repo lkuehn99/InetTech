@@ -52,7 +52,31 @@ $app->GET('/User/getUserInfo', function($request, $response, $args) {
             $queryParams = $request->getQueryParams();
             $username = $queryParams['username'];    
             
+            //TODO: DBConnection Ausfüllen
+            $con = mysqli_connect('host','database','user','password');
+            if(!$con) {
+                die('Could not connect: ' . mysqli_error($con));
+            }
+
+            mysqli_select_db($con,"Benutzer");
+            $sql="select * from Benutzer where `benutzername`='$username'";
+            $result = mysqli_query($con,$sql);
+
+            $row = mysqli_fetch_assoc($result))
+            $vorname = utf8_encode($row['Vorname']);
+            $nachname = utf8_encode($row['Nachname']);
+            $rolle = $row['rolle'];
+            $idStudiengruppe= $row['ID_Studiengruppe'];
+
+            mysqli_select_db($con,"Studiengruppen");
+            $sql="select * from Studiengruppen where `ID_Studiengruppe`='$idStudiengruppe'";
+            $resultStudiengruppe = mysqli_query($con,$sql);
+
+            $row = mysqli_fetch_assoc($resultStudiengruppe))
+            $nameStudiengruppe = utf8_encode($row['Name']);
             
+            //TODO:Daten in JSON Konvertieren und Prüfen, wenn von SQLs mehr als ein Ergebnis zurückkommt, dann Fehler
+
             $response->write('How about implementing getUserInfo as a GET method ?');
             return $response;
             });
