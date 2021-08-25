@@ -1,0 +1,11 @@
+- Git einrichten
+- Endpoints löschen / Konvertieren & neu auf Git hochladen (LK)
+- Slim Umgebung einrichten (DS)
+- Aktuellen Stand von Kreinbihls Server ziehen und als Backup in Git hochladen (LK)
+- Datenbanken auf MySQL Server von Kreinbihl erstellen / befüllen (NE)
+- Implementieren der Endpoints (DS/LK)
+- kleines PHP Skript für Passwort Hashing (DS/LK)
+- (ggf?) Sicherheit durch SWT 
+- Codedoku
+- Projektbericht (NE / TR)
+- Präsentation vorbereiten 
