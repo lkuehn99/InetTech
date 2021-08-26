@@ -38,7 +38,7 @@ function getUserInfo(username){
     xmlhttp.onreadystatechanged=function(){
         if (xmlhttp.readyState==4){
             if (xmlhttp.status==200){
-                return xmlhttp.responseText;
+                //
             }else if (xmlhttp.status==405){
                 window.alert("Invalid input!");
             }
