@@ -17,7 +17,37 @@ $app = new Slim\App();
  */
 $app->PUT('/Calendar/processAbsence', function($request, $response, $args) {
             
-            
+            /*
+            benutzername aus body lesen
+            Select * from Benuter where benutername = benutername
+            if(Benuter nicht vorhanden){
+                return Fehlercode "Benuter nicht vorhanden"
+            }
+            vorlesungsid aus body lesen
+            Join auf Benutzer und Vorlesung mit prot = benutzername, benutzer = benutzer und vorlesungsid = vorlesungsid
+            if(benutzer nicht in dieser Vorlesung){
+                return Fehlercode "Benutzer besucht nicht diese Vorlesung"
+            }else if(vorlesung.datum nicht heute){
+                return Fehlercode "Man kann sich nur am gleichen Tag entschuldigen"
+            }
+            reihenfolge = select * from benutzer where ID_Studiengruppe = (select ID_Studiengruppe from benutzer = benutzername) sort by benutzername
+            (Das ist die Reihenfolge wie geupdated wird)
+
+            vorlesList = select * from vorlesung, hat where v.ID_Modul = h.ID_Modul and h.ID_Studiengruppe = benutzer.ID_Studiengruppe sort by v.Beginn
+            (Liste mit allen Vorlesungen dieser Studiengruppe) 
+
+            vorlesung aus body finden. Alle Elemete der vorlesList vor vorlesung aus body löschen
+
+            werIstGeradeDran = reihenfolge.index von benutzer + 1
+            for(int i = 0; i < vorlesList.size, i++) {
+                update Vorlesungen set Prot = reihenfolge[werIstGeradeDran++].Benutzername where ID_Vorlesung = vorlesList[i].ID_Vorlesung
+                if(werIstGeradeDran >= reihenfolge.length){
+                    werIstGeradeDran = 0;
+                }
+            }
+            (Kann lange dauern, sollte wenn möglich asynchron erledigt werden)
+
+            */
             
             $body = $request->getParsedBody();
             $response->write('How about implementing addAbsence as a PUT method ?');
@@ -123,6 +153,25 @@ $app->POST('/User/login', function($request, $response, $args) {
             
             
             $body = $request->getParsedBody();
+
+            /*
+            Benutzername aus body auslesen
+            Select * from Benuter where benutername = benutername
+            if(Benuter nicht vorhanden){
+                return Fehlercode "Benuter nicht vorhanden"
+            }
+
+            Passwort aus body auslesen
+            Passwort hashen (oder schon im Frontend?)
+            Passwort aus body mit password aus datenbank vergleichen
+
+            if(Passwörter gleich){
+                return Login-Token (oder was auch immer man in php braucht)
+            }else {
+                return Fehlercode "Passwort nicht richtig"
+            }
+            */
+
             $response->write('How about implementing logintoUser as a POST method ?');
             return $response;
             });
