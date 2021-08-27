@@ -10,12 +10,12 @@ namespace \Models;
 class ModuleEvent {
     /* @var int $id  */
     private $id;
-/* @var \\Models\Module $ofModule  */
+/* @var int $ofModule  */
     private $ofModule;
 /* @var DateTime $startTime  */
     private $startTime;
 /* @var DateTime $endTime  */
     private $endTime;
-/* @var string $heldBy  */
-    private $heldBy;
+/* @var string $protocol  */
+    private $protocol;
 }

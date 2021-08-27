@@ -16,6 +16,8 @@ class BAUser {
     private $username;
 /* @var string $password  */
     private $password;
+/* @var string $course  */
+    private $course;
 /* @var string[] $role  */
     private $role;
 }

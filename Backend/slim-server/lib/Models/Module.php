@@ -8,8 +8,8 @@ namespace \Models;
  * Module
  */
 class Module {
-    /* @var int $id  */
-    private $id;
+    /* @var int $idModule  */
+    private $idModule;
 /* @var string $name  */
     private $name;
 }
