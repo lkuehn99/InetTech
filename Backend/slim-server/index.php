@@ -15,6 +15,21 @@ $app = new Slim\App();
  * Notes: 
 
  */
+ 
+ $app->PUT('/Backend/test', function($request, $response, $args) {
+	 			$baUser = new BAUser();
+			$baUser->$firstName = 'vor';
+			$baUser->$lastName = 'nach';
+			$baUser->$username = 'user';
+			//$baUser->$password = "";
+			$baUser->$role = 'username';
+			$baUser->$course = 'wiws18ii';
+			
+			$newResponse = $oldResponse->withJson($baUser);
+			return $newResponse;
+            });
+ }
+ 
 $app->PUT('/Calendar/processAbsence', function($request, $response, $args) {
             
             /*
@@ -96,7 +111,8 @@ $app->GET('/Calendar/returnListview', function($request, $response, $args) {
 				
 				//TODO: Add moduleName, start, end, protocol to array of Events to display / convert to json
 			}
-            
+			
+            $con->close();
             $response->write('How about implementing returnListView as a GET method ?');
             return $response;
             });
@@ -107,7 +123,7 @@ $app->GET('/Calendar/returnListview', function($request, $response, $args) {
  * Notes: 
 
  */
-$app->GET('/User/getUserInfo', function($request, $response, $args) {
+$app->GET('/User/getUserInfo', function($request, $oldResponse, $args) {
             
             $queryParams = $request->getQueryParams();
             $username = $queryParams['username'];    
@@ -118,27 +134,42 @@ $app->GET('/User/getUserInfo', function($request, $response, $args) {
                 die('Could not connect: ' . mysqli_error($con));
             }
 
-            mysqli_select_db($con,"Benutzer");
+            mysqli_select_db($con,"d02c66a3");
             $sql="select * from Benutzer where `benutzername`='$username'";
             $result = mysqli_query($con,$sql);
-
-            $row = mysqli_fetch_assoc($result))
+            $row = mysqli_fetch_assoc($result));
+			
+			// Case in which user exists several times in database
+			if(mysqli_num_rows($result)!=1){
+				$data = array('Errortext' => 'Inambigious User Database Entrys');
+				$newResponse = $oldResponse->withJson($data, 500);
+				return $newResponse;
+			}
             $vorname = utf8_encode($row['Vorname']);
             $nachname = utf8_encode($row['Nachname']);
             $rolle = $row['rolle'];
             $idStudiengruppe= $row['ID_Studiengruppe'];
 
-            mysqli_select_db($con,"Studiengruppen");
             $sql="select * from Studiengruppen where `ID_Studiengruppe`='$idStudiengruppe'";
             $resultStudiengruppe = mysqli_query($con,$sql);
 
-            $row = mysqli_fetch_assoc($resultStudiengruppe))
+            $row = mysqli_fetch_assoc($resultStudiengruppe));
             $nameStudiengruppe = utf8_encode($row['Name']);
             
             //TODO:Daten in JSON Konvertieren und Prüfen, wenn von SQLs mehr als ein Ergebnis zurückkommt, dann Fehler
 
-            $response->write('How about implementing getUserInfo as a GET method ?');
-            return $response;
+			//$data = array('name' => '$nameStudiengruppe', 'age' => 40);
+			$con->close();
+			$baUser = new BAUser();
+			$baUser->$firstName = '$vorname';
+			$baUser->$lastName = '$nachname';
+			$baUser->$username = '$username';
+			//$baUser->$password = "";
+			$baUser->$role = '$rolle';
+			$baUser->$course = '$nameStudiengruppe';
+			
+			$newResponse = $oldResponse->withJson($baUser);
+			return $newResponse;
             });
 
 
