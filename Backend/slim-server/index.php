@@ -256,35 +256,18 @@ $app->POST('/User/login', function($request, $oldResponse, $args) {
 			}
 			
 			$stored_password = utf8_encode($row['Passwort']);
+			// Password verify automatically checks for the used algorithm
 			if(password_verify($password, $stored_password)) {
-			// Passwort validiert, 200 & Token zurück
+			$data = array('Text' => 'Successfully logged in');
+				$newResponse = $oldResponse->withJson($data, 200);
+				// Braucht das Frontend ein Token o.ä.?
+				return $newResponse;
 			}else{
 				$data = array('Errortext' => 'Wrong Password for given Username');
 				$newResponse = $oldResponse->withJson($data, 403);
 				return $newResponse;
 			}
 			
-			
-            /*
-            Benutzername aus body auslesen
-            Select * from Benuter where benutername = benutername
-            if(Benuter nicht vorhanden){
-                return Fehlercode "Benuter nicht vorhanden"
-            }
-
-            Passwort aus body auslesen
-            Passwort hashen (oder schon im Frontend?)
-            Passwort aus body mit password aus datenbank vergleichen
-
-            if(Passwörter gleich){
-                return Login-Token (oder was auch immer man in php braucht)
-            }else {
-                return Fehlercode "Passwort nicht richtig"
-            }
-            */
-
-            $response->write('How about implementing logintoUser as a POST method ?');
-            return $response;
             });
 
 
