@@ -229,12 +229,42 @@ $app->GET('/User/getUserInfo', function($request, $oldResponse, $args) {
  * Notes: 
 
  */
-$app->POST('/User/login', function($request, $response, $args) {
+$app->POST('/User/login', function($request, $oldResponse, $args) {
             
             
             
-            $body = $request->getParsedBody();
 
+			$queryParams = $request->getQueryParams();
+            $username = $queryParams['username'];
+			$password = $queryParams['password'];			
+            
+			//TODO: DBConnection Ausfüllen
+            $con = mysqli_connect('host','database','user','password');
+            if(!$con) {
+                die('Could not connect: ' . mysqli_error($con));
+            }
+
+            mysqli_select_db($con,"d02c66a3");
+            $sql="select * from Benutzer where `benutzername`='$username'";
+            $result = mysqli_query($con,$sql);
+            $row = mysqli_fetch_assoc($result);
+			
+			if(mysqli_num_rows($result)==0){
+				$data = array('Errortext' => 'Given User not in given Lecture');
+				$newResponse = $oldResponse->withJson($data, 500);
+				return $newResponse;
+			}
+			
+			$stored_password = utf8_encode($row['Passwort']);
+			if(password_verify($password, $stored_password)) {
+			// Passwort validiert, 200 & Token zurück
+			}else{
+				$data = array('Errortext' => 'Wrong Password for given Username');
+				$newResponse = $oldResponse->withJson($data, 403);
+				return $newResponse;
+			}
+			
+			
             /*
             Benutzername aus body auslesen
             Select * from Benuter where benutername = benutername
