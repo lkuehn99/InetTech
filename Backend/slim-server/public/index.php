@@ -5,7 +5,7 @@
  */
 
 require_once __DIR__ . '/vendor/autoload.php';
-
+$config = include(__DIR__ . '/../config/config.php');
 $app = new Slim\App();
 
 
@@ -16,7 +16,7 @@ $app = new Slim\App();
 
  */
  
-$app->PUT('/Backend/test', function($request, $response, $args) {
+$app->PUT('/Backend/test', function($request, $oldResponse, $args) {
 	 			$baUser = new BAUser();
 			$baUser->$firstName = 'vor';
 			$baUser->$lastName = 'nach';
@@ -29,13 +29,13 @@ $app->PUT('/Backend/test', function($request, $response, $args) {
 			return $newResponse;
             });
  
-$app->PUT('/Calendar/processAbsence', function($request, $response, $args) {
+$app->PUT('/Calendar/processAbsence', function($request, $oldResponse, $args) {
             
             
             $queryParams = $request->getQueryParams();
             $username = $queryParams['username'];    
 			//TODO: DBConnection Ausfüllen
-            $con = mysqli_connect('host','database','user','password');
+			$con = mysqli_connect($config['db']['host'], $config['db']['database'], $config['db']['password'], $config['db']['user']);
             if(!$con) {
                 die('Could not connect: ' . mysqli_error($con));
             }
@@ -57,6 +57,7 @@ $app->PUT('/Calendar/processAbsence', function($request, $response, $args) {
             $row = mysqli_fetch_assoc($result);
 			 
 			if(mysqli_num_rows($result)==0){
+				$con->close();
 				$data = array('Errortext' => 'Given User not in given Lecture');
 				$newResponse = $oldResponse->withJson($data, 500);
 				return $newResponse;
@@ -68,6 +69,7 @@ $app->PUT('/Calendar/processAbsence', function($request, $response, $args) {
 			$dateToday = date('d-m-Y', time());
 			
 			if(strcmp($date, $dateToday)!=0){
+				$con->close();
 				$data = array('Errortext' => 'You can only submit your absence on the day of the lecture');
 				$newResponse = $oldResponse->withJson($data, 500);
 				return $newResponse;
@@ -77,8 +79,13 @@ $app->PUT('/Calendar/processAbsence', function($request, $response, $args) {
 			$result = mysqli_query($con,$sql);
             $row = mysqli_fetch_assoc($result);
 			
-			
 			// weiter bei VorlListe
+			
+			$con->close();
+			$newResponse = $oldResponse->withJson($data);
+			return $newResponse;
+			
+			
 			
 			/*
             Select * from Benuter where benutername = benutername
@@ -110,10 +117,6 @@ $app->PUT('/Calendar/processAbsence', function($request, $response, $args) {
             (Kann lange dauern, sollte wenn möglich asynchron erledigt werden)
 
             */
-            
-            $body = $request->getParsedBody();
-            $response->write('How about implementing addAbsence as a PUT method ?');
-            return $response;
             });
 
 
@@ -126,14 +129,12 @@ $app->PUT('/Calendar/processAbsence', function($request, $response, $args) {
 $app->GET('/Calendar/returnListview', function($request, $oldResponse, $args) {
             
             $queryParams = $request->getQueryParams();
-			//ggf. zuerst über username Module ID raussuchen  (Über username in Benutzer Tabelle ID-Studiengruppe)
+			//TODO ggf. zuerst über username Module ID raussuchen  (Über username in Benutzer Tabelle ID-Studiengruppe)
 			
 			
-			//TODO: Cannot find course in any model, add it!
 			$course = $queryParams['course'];
 			
-			//TODO: DBConnection Ausfüllen
-            $con = mysqli_connect('host','database','user','password');
+            $con = mysqli_connect($config['db']['host'], $config['db']['database'], $config['db']['password'], $config['db']['user']);
             if(!$con) {
                 die('Could not connect: ' . mysqli_error($con));
             }
@@ -178,8 +179,7 @@ $app->GET('/User/getUserInfo', function($request, $oldResponse, $args) {
             $queryParams = $request->getQueryParams();
             $username = $queryParams['username'];    
             
-            //TODO: DBConnection Ausfüllen
-            $con = mysqli_connect('host','database','user','password');
+           $con = mysqli_connect($config['db']['host'], $config['db']['database'], $config['db']['password'], $config['db']['user']);
             if(!$con) {
                 die('Could not connect: ' . mysqli_error($con));
             }
@@ -191,6 +191,7 @@ $app->GET('/User/getUserInfo', function($request, $oldResponse, $args) {
 			
 			// Case in which user exists several times in database
 			if(mysqli_num_rows($result)!=1){
+				$con->close();
 				$data = array('Errortext' => 'Inambigious User Database Entrys');
 				$newResponse = $oldResponse->withJson($data, 500);
 				return $newResponse;
@@ -206,9 +207,6 @@ $app->GET('/User/getUserInfo', function($request, $oldResponse, $args) {
             $row = mysqli_fetch_assoc($resultStudiengruppe);
             $nameStudiengruppe = utf8_encode($row['Name']);
             
-            //TODO:Daten in JSON Konvertieren und Prüfen, wenn von SQLs mehr als ein Ergebnis zurückkommt, dann Fehler
-
-			//$data = array('name' => '$nameStudiengruppe', 'age' => 40);
 			$con->close();
 			$baUser = new BAUser();
 			$baUser->$firstName = '$vorname';
@@ -238,8 +236,7 @@ $app->POST('/User/login', function($request, $oldResponse, $args) {
             $username = $queryParams['username'];
 			$password = $queryParams['password'];			
             
-			//TODO: DBConnection Ausfüllen
-            $con = mysqli_connect('host','database','user','password');
+            $con = mysqli_connect($config['db']['host'], $config['db']['database'], $config['db']['password'], $config['db']['user']);
             if(!$con) {
                 die('Could not connect: ' . mysqli_error($con));
             }
@@ -250,12 +247,14 @@ $app->POST('/User/login', function($request, $oldResponse, $args) {
             $row = mysqli_fetch_assoc($result);
 			
 			if(mysqli_num_rows($result)==0){
+				$con->close();
 				$data = array('Errortext' => 'Given User not in given Lecture');
 				$newResponse = $oldResponse->withJson($data, 500);
 				return $newResponse;
 			}
 			
 			$stored_password = utf8_encode($row['Passwort']);
+			$con->close();
 			// Password verify automatically checks for the used algorithm
 			if(password_verify($password, $stored_password)) {
 			$data = array('Text' => 'Successfully logged in');
