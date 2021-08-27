@@ -16,7 +16,7 @@ $app = new Slim\App();
 
  */
  
- $app->PUT('/Backend/test', function($request, $response, $args) {
+$app->PUT('/Backend/test', function($request, $response, $args) {
 	 			$baUser = new BAUser();
 			$baUser->$firstName = 'vor';
 			$baUser->$lastName = 'nach';
@@ -28,12 +28,59 @@ $app = new Slim\App();
 			$newResponse = $oldResponse->withJson($baUser);
 			return $newResponse;
             });
- }
  
 $app->PUT('/Calendar/processAbsence', function($request, $response, $args) {
             
-            /*
-            benutzername aus body lesen
+            
+            $queryParams = $request->getQueryParams();
+            $username = $queryParams['username'];    
+			//TODO: DBConnection Ausfüllen
+            $con = mysqli_connect('host','database','user','password');
+            if(!$con) {
+                die('Could not connect: ' . mysqli_error($con));
+            }
+
+            mysqli_select_db($con,"d02c66a3");
+			$sql="select * from Benutzer where `benutzername`='$username'";
+            $result = mysqli_query($con,$sql);
+            $row = mysqli_fetch_assoc($result);
+			
+			if(mysqli_num_rows($result)!=1){
+				$data = array('Errortext' => 'Inambigious User Database Entrys');
+				$newResponse = $oldResponse->withJson($data, 500);
+				return $newResponse;
+			}
+			
+			$lectureID = $queryParams['moduleEventID'];
+			$sql = "SELECT * FROM Benutzer JOIN Vorlesung ON Prot = Benutzername WHERE Prot = '$username' AND ID_Vorlesung = '$moduleEventID'";
+			$result = mysqli_query($con,$sql);
+            $row = mysqli_fetch_assoc($result);
+			 
+			if(mysqli_num_rows($result)==0){
+				$data = array('Errortext' => 'Given User not in given Lecture');
+				$newResponse = $oldResponse->withJson($data, 500);
+				return $newResponse;
+			}
+			// check if the given lecture is today, if not return an error
+			$startTime = utf8_encode($row['Beginn']); 
+			$startTimestamp = strtotime($startTime);
+			$date = date('d-m-Y', $startTimestamp);
+			$dateToday = date('d-m-Y', time());
+			
+			if(strcmp($date, $dateToday)!=0){
+				$data = array('Errortext' => 'You can only submit your absence on the day of the lecture');
+				$newResponse = $oldResponse->withJson($data, 500);
+				return $newResponse;
+			}
+			// in Liste
+			$sql = SELECT * FROM Benutzer Where ID_Studiengruppe = (SELECT ID_Studiengruppe from Benutzer = '$username') sort by benutzername;
+			$result = mysqli_query($con,$sql);
+            $row = mysqli_fetch_assoc($result);
+			
+			
+			// weiter bei VorlListe
+			
+			/*
             Select * from Benuter where benutername = benutername
             if(Benuter nicht vorhanden){
                 return Fehlercode "Benuter nicht vorhanden"
@@ -76,9 +123,12 @@ $app->PUT('/Calendar/processAbsence', function($request, $response, $args) {
  * Notes: 
 
  */
-$app->GET('/Calendar/returnListview', function($request, $response, $args) {
+$app->GET('/Calendar/returnListview', function($request, $oldResponse, $args) {
             
             $queryParams = $request->getQueryParams();
+			//ggf. zuerst über username Module ID raussuchen  (Über username in Benutzer Tabelle ID-Studiengruppe)
+			
+			
 			//TODO: Cannot find course in any model, add it!
 			$course = $queryParams['course'];
 			
@@ -88,20 +138,20 @@ $app->GET('/Calendar/returnListview', function($request, $response, $args) {
                 die('Could not connect: ' . mysqli_error($con));
             }
             
-			//TODO: Documentation states names of the database, not table, as second parameter. Verify / change if required
+			$data = array();
 			mysqli_select_db($con,"d02c66a3");
 			$sqlPrep="select * from hat where 'ID_Studiengruppe'='$course'";
 			$resultPrep = mysqli_query($con,$sqlPrep); 
 			while ($rowPrep = mysql_fetch_array($resultPrep)) {
 				$moduleID = utf8_encode($rowPrep['ID_Modul']);
-				$sql="select * from Vorlesungen where 'ID_Modul'='$moduleID'",
+				$sql="select * from Vorlesungen where 'ID_Modul'='$moduleID'";
 				$result = mysqli_query($con,$sql);
-				$row = mysqli_fetch_assoc($result));
+				$row = mysqli_fetch_assoc($result);
 				
 				// get Name of corresponding Module to display
-				$sqlModuleName = "Select * from Modul where 'ID_Modul'='$moduleID'"
+				$sqlModuleName = "Select * from Modul where 'ID_Modul'='$moduleID'";
 				$resultModuleName = mysqli_query($con,$sqlModuleName); 
-				$rowModuleName = mysqli_fetch_assoc($resultModuleName));
+				$rowModuleName = mysqli_fetch_assoc($resultModuleName);
 				
 				// Data to display 
 				$moduleName = utf8_encode($rowModuleName['Name']);
@@ -109,12 +159,12 @@ $app->GET('/Calendar/returnListview', function($request, $response, $args) {
 				$end = utf8_encode($row['Ende']); 
 				$protocol = utf8_encode($row['Prot']);
 				
-				//TODO: Add moduleName, start, end, protocol to array of Events to display / convert to json
+				array_push($data, array('Modul' => '$moduleName', 'Startzeit' => '$start', 'Endzeit' => '$end', 'Protokollant' => '$protocol'))
 			}
 			
             $con->close();
-            $response->write('How about implementing returnListView as a GET method ?');
-            return $response;
+            $newResponse = $oldResponse->withJson($data);
+			return $newResponse;
             });
 			
 /**
@@ -137,7 +187,7 @@ $app->GET('/User/getUserInfo', function($request, $oldResponse, $args) {
             mysqli_select_db($con,"d02c66a3");
             $sql="select * from Benutzer where `benutzername`='$username'";
             $result = mysqli_query($con,$sql);
-            $row = mysqli_fetch_assoc($result));
+            $row = mysqli_fetch_assoc($result);
 			
 			// Case in which user exists several times in database
 			if(mysqli_num_rows($result)!=1){
@@ -153,7 +203,7 @@ $app->GET('/User/getUserInfo', function($request, $oldResponse, $args) {
             $sql="select * from Studiengruppen where `ID_Studiengruppe`='$idStudiengruppe'";
             $resultStudiengruppe = mysqli_query($con,$sql);
 
-            $row = mysqli_fetch_assoc($resultStudiengruppe));
+            $row = mysqli_fetch_assoc($resultStudiengruppe);
             $nameStudiengruppe = utf8_encode($row['Name']);
             
             //TODO:Daten in JSON Konvertieren und Prüfen, wenn von SQLs mehr als ein Ergebnis zurückkommt, dann Fehler
