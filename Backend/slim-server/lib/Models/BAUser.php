@@ -2,7 +2,7 @@
 /*
  * BAUser
  */
-namespace \Models;
+/*namespace \Models; */
 
 /*
  * BAUser

@@ -2,7 +2,7 @@
 /*
  * CourseHasModule
  */
-namespace \Models;
+/*namespace \Models; */
 
 /*
  * CourseHasModule

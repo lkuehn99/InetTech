@@ -2,7 +2,7 @@
 /*
  * BALoginUser
  */
-namespace \Models;
+/*namespace \Models;*/
 
 /*
  * BALoginUser

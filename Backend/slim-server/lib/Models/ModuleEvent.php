@@ -2,7 +2,7 @@
 /*
  * ModuleEvent
  */
-namespace \Models;
+/*namespace \Models; */
 
 /*
  * ModuleEvent

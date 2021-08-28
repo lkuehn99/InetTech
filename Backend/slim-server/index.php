@@ -4,8 +4,14 @@
  * @version 1.0.0
  */
 
-require_once __DIR__ . '/vendor/autoload.php';
-$config = include(__DIR__ . '/../config/config.php');
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/lib/Models/BALoginUser.php';
+require_once __DIR__ . '/lib/Models/BAUser.php';
+require_once __DIR__ . '/lib/Models/Course.php';
+require_once __DIR__ . '/lib/Models/CourseHasModule.php';
+require_once __DIR__ . '/lib/Models/Module.php';
+require_once __DIR__ . '/lib/Models/ModuleEvent.php';
+$config = include(__DIR__ . '/config/config.php');
 $app = new Slim\App();
 
 
@@ -16,8 +22,8 @@ $app = new Slim\App();
 
  */
  
-$app->PUT('/Backend/test', function($request, $oldResponse, $args) {
-	 			$baUser = new BAUser();
+$app->GET('/Backend/test', function($request, $oldResponse, $args) {
+	 		$baUser = new BAUser();
 			$baUser->$firstName = 'vor';
 			$baUser->$lastName = 'nach';
 			$baUser->$username = 'user';
@@ -75,7 +81,7 @@ $app->PUT('/Calendar/processAbsence', function($request, $oldResponse, $args) {
 				return $newResponse;
 			}
 			// in Liste
-			$sql = SELECT * FROM Benutzer Where ID_Studiengruppe = (SELECT ID_Studiengruppe from Benutzer = '$username') sort by benutzername;
+			$sql = "SELECT * FROM Benutzer Where ID_Studiengruppe = (SELECT ID_Studiengruppe from Benutzer = '$username') sort by benutzername";
 			$result = mysqli_query($con,$sql);
             $row = mysqli_fetch_assoc($result);
 			
@@ -129,10 +135,7 @@ $app->PUT('/Calendar/processAbsence', function($request, $oldResponse, $args) {
 $app->GET('/Calendar/returnListview', function($request, $oldResponse, $args) {
             
             $queryParams = $request->getQueryParams();
-			//TODO ggf. zuerst über username Module ID raussuchen  (Über username in Benutzer Tabelle ID-Studiengruppe)
 			
-			
-			$course = $queryParams['course'];
 			
             $con = mysqli_connect($config['db']['host'], $config['db']['database'], $config['db']['password'], $config['db']['user']);
             if(!$con) {
@@ -141,6 +144,15 @@ $app->GET('/Calendar/returnListview', function($request, $oldResponse, $args) {
             
 			$data = array();
 			mysqli_select_db($con,"d02c66a3");
+			//TODO ggf. zuerst über username Module ID raussuchen  (Über username in Benutzer Tabelle ID-Studiengruppe)
+			
+			$username = $queryParams['username'];
+			$sql = "Select * from Benutzer where 'Benutzername'='$username'";
+			$result = mysqli_query($con,$sql);
+			$row = mysqli_fetch_assoc($result);
+			$course=tf8_encode($row['ID_Studiengruppe']);
+			
+			
 			$sqlPrep="select * from hat where 'ID_Studiengruppe'='$course'";
 			$resultPrep = mysqli_query($con,$sqlPrep); 
 			while ($rowPrep = mysql_fetch_array($resultPrep)) {
@@ -160,7 +172,7 @@ $app->GET('/Calendar/returnListview', function($request, $oldResponse, $args) {
 				$end = utf8_encode($row['Ende']); 
 				$protocol = utf8_encode($row['Prot']);
 				
-				array_push($data, array('Modul' => '$moduleName', 'Startzeit' => '$start', 'Endzeit' => '$end', 'Protokollant' => '$protocol'))
+				array_push($data, array('Modul' => '$moduleName', 'Startzeit' => '$start', 'Endzeit' => '$end', 'Protokollant' => '$protocol'));
 			}
 			
             $con->close();
