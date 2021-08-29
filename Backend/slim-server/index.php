@@ -46,7 +46,8 @@ $app->GET('/Backend/test', function($request, $oldResponse, $args) {
  
 $app->PUT('/Calendar/processAbsence', function($request, $oldResponse, $args) {
             
-            
+            $lectureList = array();
+			$userList = array();
             $queryParams = $request->getQueryParams();
             $username = $queryParams['username'];    
 			$con = mysqli_connect('barm.wappworker.de', 'd02c66a3', 'barm-datenbank-2018ii', 'd02c66a3');
@@ -59,14 +60,16 @@ $app->PUT('/Calendar/processAbsence', function($request, $oldResponse, $args) {
             $result = mysqli_query($con,$sql);
             $row = mysqli_fetch_assoc($result);
 			
+			
 			if(mysqli_num_rows($result)!=1){
 				$data = array('Errortext' => 'Inambigious User Database Entrys');
 				$newResponse = $oldResponse->withJson($data, 500);
 				return $newResponse;
 			}
 			
+			$idStudiengruppe= $row['ID_Studiengruppe'];
 			$lectureID = $queryParams['moduleEventID'];
-			$sql = "SELECT * FROM Benutzer JOIN Vorlesung ON Prot = Benutzername WHERE Prot = '$username' AND ID_Vorlesung = '$moduleEventID'";
+			$sql = "SELECT * FROM Benutzer JOIN Vorlesung ON `Prot` = `Benutzername` WHERE `Prot` = '$username' AND `ID_Vorlesung` = '$moduleEventID'";
 			$result = mysqli_query($con,$sql);
             $row = mysqli_fetch_assoc($result);
 			 
@@ -88,13 +91,39 @@ $app->PUT('/Calendar/processAbsence', function($request, $oldResponse, $args) {
 				$newResponse = $oldResponse->withJson($data, 500);
 				return $newResponse;
 			}
-			// in Liste
-			$sql = "SELECT * FROM Benutzer Where ID_Studiengruppe = (SELECT ID_Studiengruppe from Benutzer = '$username') sort by benutzername";
+			// Reihenfolge
+			$sql = "SELECT * FROM Benutzer Where `ID_Studiengruppe` = (SELECT ID_Studiengruppe from Benutzer WHERE `Benutzername` = '$username') sort by benutzername";
 			$result = mysqli_query($con,$sql);
-            $row = mysqli_fetch_assoc($result);
+			while ($row = mysqli_fetch_array($result)) {
+				$currUser = $row['Benutzername'];
+				array_push($userList, $currUser);
+            }
 			
 			// weiter bei VorlListe
+			$sqlLectureList = "SELECT * From Vorlesung JOIN hat  ON `Vorlesung.ID_Modul` = `hat.ID_MODUL` WHERE hat.ID_Studiengruppe` = '$idStudiengruppe' sort by `Vorlesung.Beginn`"
+			$resultLectureList = mysqli_query($con,$sqlLectureList);
 			
+			while ($rowLectureList = mysqli_fetch_array($resultLectureList)) {
+			$idModule= $rowLectureList['ID_Vorlesung'];
+			array_push($lectureList, $idModule);
+			}
+			$key = array_search($lectureID, $lectureList);
+			$pos = array_search($key, array_keys($lectureList));
+			if($pos<1){
+				$pos = 1;
+			}
+			$lectureList= array_slice($lectureList,$pos-1,count($lectureList)-1,true);
+			
+			$key = array_search($username, $userList);
+			$pos = array_search($key, array_keys($userList));
+			if($pos<1){
+				$pos = 1;
+			}
+			$nextProt = $userList[$pos+1];
+			for($i=0; i<count($lectureList)-1; i++){
+				// HIER WEITER; INDEX STATT POSITION
+				$sql = "UPDATE Vorlesungen SET Prot = "
+			}
 			
 			
 			
@@ -255,9 +284,9 @@ $app->GET('/User/getUserInfo', function($request, $oldResponse, $args) {
  */
 $app->POST('/User/login', function($request, $oldResponse, $args) {
              
-			$queryParams = $request->getQueryParams();
-            $username = $queryParams['username'];
-			$password = $queryParams['password'];			
+			$body = $request->getParsedBody();
+            $username = $body['username'];	
+			$password = $body['password'];			
             
             $con = mysqli_connect('barm.wappworker.de', 'd02c66a3', 'barm-datenbank-2018ii', 'd02c66a3');
             if(!$con) {
