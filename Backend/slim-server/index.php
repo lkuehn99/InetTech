@@ -23,15 +23,24 @@ $app = new Slim\App();
  */
  
 $app->GET('/Backend/test', function($request, $oldResponse, $args) {
-	 		$baUser = new BAUser();
-			$baUser->$firstName = 'vor';
-			$baUser->$lastName = 'nach';
-			$baUser->$username = 'user';
-			//$baUser->$password = "";
-			$baUser->$role = 'username';
-			$baUser->$course = 'wiws18ii';
+	 		
+			$queryParams = $request->getQueryParams();
+            $username = $queryParams['username'];
+			/*$con = mysqli_connect($config['db']['host'], $config['db']['database'], $config['db']['password'], $config['db']['user']); */
+			$con = mysqli_connect('barm.wappworker.de', 'd02c66a3', 'barm-datenbank-2018ii', 'd02c66a3');
+            if(!$con) {
+                die('Could not connect: ' . mysqli_error($con));
+            }
+
+            mysqli_select_db($con,"d02c66a3");
+			$sql="select * from Benutzer where `benutzername`='$username'";
+            $result = mysqli_query($con,$sql);
+            $row = mysqli_fetch_assoc($result);
+			$ads = utf8_encode($row['Benutzername']);
 			
-			$newResponse = $oldResponse->withJson($baUser);
+
+			$con->close();
+			$newResponse = $oldResponse->withJson($ads);
 			return $newResponse;
             });
  
@@ -40,8 +49,7 @@ $app->PUT('/Calendar/processAbsence', function($request, $oldResponse, $args) {
             
             $queryParams = $request->getQueryParams();
             $username = $queryParams['username'];    
-			//TODO: DBConnection Ausfüllen
-			$con = mysqli_connect($config['db']['host'], $config['db']['database'], $config['db']['password'], $config['db']['user']);
+			$con = mysqli_connect('barm.wappworker.de', 'd02c66a3', 'barm-datenbank-2018ii', 'd02c66a3');
             if(!$con) {
                 die('Could not connect: ' . mysqli_error($con));
             }
@@ -86,6 +94,9 @@ $app->PUT('/Calendar/processAbsence', function($request, $oldResponse, $args) {
             $row = mysqli_fetch_assoc($result);
 			
 			// weiter bei VorlListe
+			
+			
+			
 			
 			$con->close();
 			$newResponse = $oldResponse->withJson($data);
@@ -137,7 +148,7 @@ $app->GET('/Calendar/returnListview', function($request, $oldResponse, $args) {
             $queryParams = $request->getQueryParams();
 			
 			
-            $con = mysqli_connect($config['db']['host'], $config['db']['database'], $config['db']['password'], $config['db']['user']);
+           $con = mysqli_connect('barm.wappworker.de', 'd02c66a3', 'barm-datenbank-2018ii', 'd02c66a3');
             if(!$con) {
                 die('Could not connect: ' . mysqli_error($con));
             }
@@ -147,22 +158,22 @@ $app->GET('/Calendar/returnListview', function($request, $oldResponse, $args) {
 			//TODO ggf. zuerst über username Module ID raussuchen  (Über username in Benutzer Tabelle ID-Studiengruppe)
 			
 			$username = $queryParams['username'];
-			$sql = "Select * from Benutzer where 'Benutzername'='$username'";
+			$sql = "Select * from Benutzer where `Benutzername`='$username'";
 			$result = mysqli_query($con,$sql);
 			$row = mysqli_fetch_assoc($result);
-			$course=tf8_encode($row['ID_Studiengruppe']);
+			$course=utf8_encode($row['ID_Studiengruppe']);
 			
 			
-			$sqlPrep="select * from hat where 'ID_Studiengruppe'='$course'";
+			$sqlPrep="select * from hat where `id_studiengruppe`='$course'";
 			$resultPrep = mysqli_query($con,$sqlPrep); 
-			while ($rowPrep = mysql_fetch_array($resultPrep)) {
+			while ($rowPrep = mysqli_fetch_array($resultPrep)) {
 				$moduleID = utf8_encode($rowPrep['ID_Modul']);
-				$sql="select * from Vorlesungen where 'ID_Modul'='$moduleID'";
+				$sql="select * from Vorlesungen where `ID_Modul`='$moduleID'";
 				$result = mysqli_query($con,$sql);
 				$row = mysqli_fetch_assoc($result);
 				
 				// get Name of corresponding Module to display
-				$sqlModuleName = "Select * from Modul where 'ID_Modul'='$moduleID'";
+				$sqlModuleName = "Select * from Modul where `ID_Modul`='$moduleID'";
 				$resultModuleName = mysqli_query($con,$sqlModuleName); 
 				$rowModuleName = mysqli_fetch_assoc($resultModuleName);
 				
@@ -172,7 +183,7 @@ $app->GET('/Calendar/returnListview', function($request, $oldResponse, $args) {
 				$end = utf8_encode($row['Ende']); 
 				$protocol = utf8_encode($row['Prot']);
 				
-				array_push($data, array('Modul' => '$moduleName', 'Startzeit' => '$start', 'Endzeit' => '$end', 'Protokollant' => '$protocol'));
+				array_push($data, array('Modul' => $moduleName, 'Startzeit' => $start, 'Endzeit' => $end, 'Protokollant' => $protocol));
 			}
 			
             $con->close();
@@ -191,7 +202,7 @@ $app->GET('/User/getUserInfo', function($request, $oldResponse, $args) {
             $queryParams = $request->getQueryParams();
             $username = $queryParams['username'];    
             
-           $con = mysqli_connect($config['db']['host'], $config['db']['database'], $config['db']['password'], $config['db']['user']);
+           $con = mysqli_connect('barm.wappworker.de', 'd02c66a3', 'barm-datenbank-2018ii', 'd02c66a3');
             if(!$con) {
                 die('Could not connect: ' . mysqli_error($con));
             }
@@ -220,15 +231,18 @@ $app->GET('/User/getUserInfo', function($request, $oldResponse, $args) {
             $nameStudiengruppe = utf8_encode($row['Name']);
             
 			$con->close();
-			$baUser = new BAUser();
-			$baUser->$firstName = '$vorname';
-			$baUser->$lastName = '$nachname';
-			$baUser->$username = '$username';
-			//$baUser->$password = "";
-			$baUser->$role = '$rolle';
-			$baUser->$course = '$nameStudiengruppe';
 			
-			$newResponse = $oldResponse->withJson($baUser);
+			//TODO Warum klappt das nicht
+			/*$baUser = new BAUser();
+			$baUser->$firstName = $vorname;
+			$baUser->$lastName = $nachname;
+			$baUser->$username = $username;
+			//$baUser->$password = "";
+			$baUser->$role = $rolle;
+			$baUser->$course = $nameStudiengruppe;*/
+			$data = array('firstName' => $vorname, 'lastName' => $nachname, 'username' => $username, 'role' => $rolle, 'course' => $nameStudiengruppe);
+			
+			$newResponse = $oldResponse->withJson($data);
 			return $newResponse;
             });
 
@@ -240,15 +254,12 @@ $app->GET('/User/getUserInfo', function($request, $oldResponse, $args) {
 
  */
 $app->POST('/User/login', function($request, $oldResponse, $args) {
-            
-            
-            
-
+             
 			$queryParams = $request->getQueryParams();
             $username = $queryParams['username'];
 			$password = $queryParams['password'];			
             
-            $con = mysqli_connect($config['db']['host'], $config['db']['database'], $config['db']['password'], $config['db']['user']);
+            $con = mysqli_connect('barm.wappworker.de', 'd02c66a3', 'barm-datenbank-2018ii', 'd02c66a3');
             if(!$con) {
                 die('Could not connect: ' . mysqli_error($con));
             }
@@ -260,7 +271,7 @@ $app->POST('/User/login', function($request, $oldResponse, $args) {
 			
 			if(mysqli_num_rows($result)==0){
 				$con->close();
-				$data = array('Errortext' => 'Given User not in given Lecture');
+				$data = array('Errortext' => 'Given User does not exist');
 				$newResponse = $oldResponse->withJson($data, 500);
 				return $newResponse;
 			}
