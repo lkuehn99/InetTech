@@ -23,15 +23,15 @@ CREATE Table Benutzer(
 );
 CREATE Table Vorlesungen(
 	ID_Vorlesung INTEGER PRIMARY KEY,
-	Beginn timestamp,
-	Ende timestamp,
+	Beginn timestamp DEFAULT CURRENT_TIMESTAMP,
+	Ende timestamp DEFAULT CURRENT_TIMESTAMP,
 	Prot VARCHAR (30) REFERENCES Benutzer,
-	ID_Modul INTEGER REFERENCES Modul
+	ID_Hat INTEGER REFERENCES hat
 );
 CREATE Table hat(
+	ID_Hat INTEGER PRIMARY KEY,
 	ID_Studiengruppe INTEGER REFERENCES Studiengruppen,
-	ID_Modul INTEGER REFERENCES Modul,
-	PRIMARY KEY (ID_Modul, ID_Studiengruppe)
+	ID_Modul INTEGER REFERENCES Modul
 );
 
 INSERT INTO Studiengruppen(ID_Studiengruppe, Name)
@@ -44,23 +44,24 @@ VALUES(1, 'Datenbanken'),
 (3, 'Accounting');
 
 INSERT INTO Benutzer(Benutzername, Vorname, Nachname, rolle, Passwort, ID_Studiengruppe)
-VALUES('treinig','Thomas','Reinig','Student','4fcaf07c3790bd48a564ef8e05c7abdc',1),
-('nengel','Niklas','Engel','Student','17ac5400676655300e7898906fbfcf33',1),
-('lkuehn','Leon','Kuehn','Student','0ed260a8f7f8c7534859e1edd52337a0',2),
-('fvoss','Frederik','Voss','Student','692359073981e56c2b10ab2d592ac2f9',1),
-('dsuffel','Dennis','Suffel','Student','51782ea7286c92803385c67f667155c1',2);
+VALUES('treinig','Thomas','Reinig','Student','$argon2i$v=19$m=16,t=2,p=1$UHZSTUlNY1JTODlKUFF6TQ$YM5esz6E4ofoxF0jC88kvA',1),
+('nengel','Niklas','Engel','Student','$argon2i$v=19$m=16,t=2,p=1$UHZSTUlNY1JTODlKUFF6TQ$M1QvgKDzeogLWVPpoeXhSw',1),
+('lkuehn','Leon','Kuehn','Student','$argon2i$v=19$m=16,t=2,p=1$UHZSTUlNY1JTODlKUFF6TQ$lsLB2ec6LW6m31hvzS4Yvg',2),
+('fvoss','Frederik','Voss','Student','$argon2i$v=19$m=16,t=2,p=1$UHZSTUlNY1JTODlKUFF6TQ$5NevnsyR2rK1QfqfTh5Jkw',1),
+('dsuffel','Dennis','Suffel','Student','$argon2i$v=19$m=16,t=2,p=1$UHZSTUlNY1JTODlKUFF6TQ$I+3kA9bWMBTF9uZzGrWfzw',2);
 
-INSERT INTO Vorlesungen(ID_Vorlesung, Beginn, Ende, Prot, ID_Modul)
-VALUES(1, '2021-10-01 08:30:00', '2021-10-01 11:45:00', 'nengel', 2),
-(2, '2021-10-02 08:30:00', '2021-10-02 11:45:00', 'lkuehn', 1),
-(3, '2021-10-03 08:30:00', '2021-10-03 11:45:00', 'treinig', 3),
-(4, '2021-10-06 12:45:00', '2021-10-06 16:00:00', 'dsuffel', 1),
-(5, '2021-10-07 12:45:00', '2021-10-07 16:00:00', 'fvoss', 2),
-(6, '2021-10-08 12:45:00', '2021-10-07 16:00:00', 'nengel', 3),
-(7, '2021-10-09 08:30:00', '2021-10-03 11:45:00', 'treinig', 3);
+INSERT INTO Vorlesungen(ID_Vorlesung, Beginn, Ende, Prot, ID_Hat)
+VALUES(1, '2021-10-01 08:30:00', '2021-10-01 11:45:00', 'nengel', 3),
+(2, '2021-10-02 08:30:00', '2021-10-02 11:45:00', 'lkuehn', 2),
+(3, '2021-08-30 08:30:00', '2021-10-03 11:45:00', 'treinig', 1),
+(4, '2021-10-06 12:45:00', '2021-10-06 16:00:00', 'dsuffel', 2),
+(5, '2021-10-07 12:45:00', '2021-10-07 16:00:00', 'fvoss', 3),
+(6, '2021-10-08 12:45:00', '2021-10-07 16:00:00', 'nengel', 1),
+(7, '2021-10-09 08:30:00', '2021-10-03 11:45:00', 'treinig', 1),
+(8, '2021-10-10 08:30:00', '2021-10-03 11:45:00', 'fvoss', 4);
 
-INSERT INTO hat(ID_Studiengruppe, ID_Modul)
-VALUES(1,3),
-(2,1),
-(1,2),
-(1,1);
+INSERT INTO hat
+VALUES(1,1,3),
+(2,2,1),
+(3,1,2),
+(4,1,1);
