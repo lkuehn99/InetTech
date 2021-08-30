@@ -14,6 +14,7 @@ require_once __DIR__ . '/lib/Models/ModuleEvent.php';
 $config = include(__DIR__ . '/config/config.php');
 $app = new Slim\App();
 
+use \Firebase\JWT\JWT;
 
 /**
  * PUT addAbsence
@@ -23,7 +24,25 @@ $app = new Slim\App();
  */
  
 $app->GET('/Backend/test', function($request, $oldResponse, $args) {
-	 		
+			
+			if(!$request->hasHeader('api-jwt')) {
+				$res['status'] = "error";
+				$res['message'] = utf8_encode("Auth failed - API token missing.");
+				$newResponse = $oldResponse->withStatus(400)->withHeader('Content-Type','application/json');
+				$newResponse->write(json_encode($res));
+				return $newResponse;
+			} else {
+				$apiTokenJWT = $request->getHeader('api-jwt')[0];
+				$result = JWT_check_token($apiTokenJWT);
+				if($result['status'] == 'error') {
+					$res['status'] = 'error';
+					$res['message'] = $result['message'];
+					$newResponse = $oldResponse->withStatus(403)->withHeader('Content-Type','application/json');
+					$newResponse->write(json_encode($res));
+					return $newResponse;
+				}
+			}
+
 			$queryParams = $request->getQueryParams();
             $username = $queryParams['username'];
 			//TODO Kreinbihl fragen: Properties in eigene Config 
@@ -33,20 +52,32 @@ $app->GET('/Backend/test', function($request, $oldResponse, $args) {
                 die('Could not connect: ' . mysqli_error($con));
             }
 
-            mysqli_select_db($con,"d02c66a3");
-			$sql="select * from Benutzer where `benutzername`='$username'";
-            $result = mysqli_query($con,$sql);
-            $row = mysqli_fetch_assoc($result);
-			$ads = utf8_encode($row['Benutzername']);
-			
-
 			$con->close();
-			$newResponse = $oldResponse->withJson($ads);
+			$newResponse = $oldResponse->withJson('Juhuu');
 			return $newResponse;
+		
             });
  
 $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
             
+			if(!$request->hasHeader('api-jwt')) {
+				$res['status'] = "error";
+				$res['message'] = utf8_encode("Auth failed - API token missing.");
+				$newResponse = $oldResponse->withStatus(400)->withHeader('Content-Type','application/json');
+				$newResponse->write(json_encode($res));
+				return $newResponse;
+			} else {
+				$apiTokenJWT = $request->getHeader('api-jwt')[0];
+				$result = JWT_check_token($apiTokenJWT);
+				if($result['status'] == 'error') {
+					$res['status'] = 'error';
+					$res['message'] = $result['message'];
+					$newResponse = $oldResponse->withStatus(403)->withHeader('Content-Type','application/json');
+					$newResponse->write(json_encode($res));
+					return $newResponse;
+				}
+			}
+
             $lectureList = array();
 			$userList = array();
             $queryParams = $request->getQueryParams();
@@ -153,7 +184,26 @@ $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
 
  */
 $app->GET('/Calendar', function($request, $oldResponse, $args) {
-            
+
+			if(!$request->hasHeader('api-jwt')) {
+				$res['status'] = "error";
+				$res['message'] = utf8_encode("Auth failed - API token missing.");
+				$newResponse = $oldResponse->withStatus(400)->withHeader('Content-Type','application/json');
+				$newResponse->write(json_encode($res));
+				return $newResponse;
+			} else {
+				$apiTokenJWT = $request->getHeader('api-jwt')[0];
+				$result = JWT_check_token($apiTokenJWT);
+				if($result['status'] == 'error') {
+					$res['status'] = 'error';
+					$res['message'] = $result['message'];
+					$newResponse = $oldResponse->withStatus(403)->withHeader('Content-Type','application/json');
+					$newResponse->write(json_encode($res));
+					return $newResponse;
+				}
+			}
+
+
             $queryParams = $request->getQueryParams();
 			
 			
@@ -210,6 +260,24 @@ $app->GET('/Calendar', function($request, $oldResponse, $args) {
  */
 $app->GET('/User', function($request, $oldResponse, $args) {
             
+			if(!$request->hasHeader('api-jwt')) {
+				$res['status'] = "error";
+				$res['message'] = utf8_encode("Auth failed - API token missing.");
+				$newResponse = $oldResponse->withStatus(400)->withHeader('Content-Type','application/json');
+				$newResponse->write(json_encode($res));
+				return $newResponse;
+			} else {
+				$apiTokenJWT = $request->getHeader('api-jwt')[0];
+				$result = JWT_check_token($apiTokenJWT);
+				if($result['status'] == 'error') {
+					$res['status'] = 'error';
+					$res['message'] = $result['message'];
+					$newResponse = $oldResponse->withStatus(403)->withHeader('Content-Type','application/json');
+					$newResponse->write(json_encode($res));
+					return $newResponse;
+				}
+			}
+
             $queryParams = $request->getQueryParams();
             $username = $queryParams['username'];    
             
@@ -265,7 +333,25 @@ $app->GET('/User', function($request, $oldResponse, $args) {
 
  */
 $app->POST('/User/Login', function($request, $oldResponse, $args) {
-             
+            
+			if(!$request->hasHeader('api-jwt')) {
+				$res['status'] = "error";
+				$res['message'] = utf8_encode("Auth failed - API token missing.");
+				$newResponse = $oldResponse->withStatus(400)->withHeader('Content-Type','application/json');
+				$newResponse->write(json_encode($res));
+				return $newResponse;
+			} else {
+				$apiTokenJWT = $request->getHeader('api-jwt')[0];
+				$result = JWT_check_token($apiTokenJWT);
+				if($result['status'] == 'error') {
+					$res['status'] = 'error';
+					$res['message'] = $result['message'];
+					$newResponse = $oldResponse->withStatus(403)->withHeader('Content-Type','application/json');
+					$newResponse->write(json_encode($res));
+					return $newResponse;
+				}
+			}
+
 			$body = $request->getParsedBody();
             $username = $body['username'];	
 			$password = $body['password'];			
@@ -303,6 +389,27 @@ $app->POST('/User/Login', function($request, $oldResponse, $args) {
 			
             });
 
+function JWT_check_token ($token){
+	define('SECRET','RTFFRjJEOTY0ODg3NUNBRDVGOTlGOTM1RUE5RD==');
+	define('APIKEY','1234567890');
+	define('ALGORITHM','HS256');
 
+	try{
+		$algsAllowed = array(ALGORITHM);
+		$decoded = JWT::decode($token, SECRET, $algsAllowed);
+		if($decoded->{'sub'} !== APIKEY) {
+			$res['status'] = "error";
+			$res['message'] = "Wrong Token.";
+		} else {
+			$res['status'] = "success";
+			$res['message'] = "JWT ok";
+		}
+	}
+	catch (Exception $e) {
+		$res['status'] = "error";
+		$res['message'] = $e->getMessage();
+	}
+	return $res;
+}
 
 $app->run();
