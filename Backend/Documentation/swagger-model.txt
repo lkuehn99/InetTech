@@ -18,7 +18,7 @@ tags:
 schemes:
 - "https"
 paths:
-  /User/login:
+  /User/Login:
     post:
       tags:
       - "User"
@@ -37,7 +37,7 @@ paths:
       responses:
         "405":
           description: "Invalid input"
-  /Calendar/returnListview:
+  /Calendar:
     get:
       tags:
       - "Calendar"
@@ -56,7 +56,7 @@ paths:
       responses:
         "405":
           description: "Invalid input"
-  /Calendar/processAbsence:
+  /Calendar/Absence:
     put:
       tags:
       - "Calendar"
@@ -82,7 +82,7 @@ paths:
           description: "Invalid Input"
             
 
-  /User/getUserInfo:
+  /User:
     get:
       tags:
       - "User"
