@@ -1,0 +1,204 @@
+swagger: "2.0"
+info:
+  description: "Protokoll Verwaltung"
+  version: "1.0.0"
+  title: "Protokoll Verwaltung"
+# host: "petstore.swagger.io"
+# basePath: "/v2"
+tags:
+- name: "User"
+  description: "Operations regarding users"
+  externalDocs:
+    description: "Find out more"
+    url: "http://swagger.io"
+    
+- name: "Calendar"
+  description: "Operations regarding the calendar"
+    
+schemes:
+- "https"
+paths:
+  /User/login:
+    post:
+      tags:
+      - "User"
+      summary: "Log in as User"
+      description: ""
+      operationId: "logintoUser"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Username and password"
+        required: true
+        schema: 
+          $ref: "#/definitions/BALoginUser"
+      responses:
+        "405":
+          description: "Invalid input"
+  /Calendar/returnListview:
+    get:
+      tags:
+      - "Calendar"
+      summary: "Return list view"
+      description: ""
+      operationId: "returnListView"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Username"
+        required: true
+        schema:
+          $ref: "#/definitions/moduleEvent"
+      responses:
+        "405":
+          description: "Invalid input"
+  /Calendar/processAbsence:
+    put:
+      tags:
+      - "Calendar"
+      summary: "Add absence for user"
+      description: ""
+      operationId: "addAbsence"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Username and ID of Module"
+        required: true
+        schema:
+          type: "object"
+          properties: 
+            username:
+              type: "string"
+            moduleEventID:
+              type: "integer"
+      responses:
+        "405":
+          description: "Invalid Input"
+            
+
+  /User/getUserInfo:
+    get:
+      tags:
+      - "User"
+      summary: "Get Info about User"
+      description: ""
+      operationId: "getUserInfo"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: query
+        name: "username"
+        type: "string"
+        description: "Username"
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/BAUser"
+        "405":
+          description: "Invalid Input"
+definitions:
+  BAUser:
+    type: "object"
+    properties:
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
+      username:
+        type: "string"
+      password:
+        type: "string"
+      course:
+        type: "string"
+      role:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - Student
+          - Kurssprecher
+          - Dozent
+          - Admin
+      #selectedModules: 
+        #type: "array"
+        #items:
+          #IDs of modules chosen by specified user
+          #type: "integer"
+  BALoginUser:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      password:
+        type: "string"
+  module:
+    type: "object"
+    properties:
+      id_module:
+        type: "integer"
+      name:
+        type: "string"
+      #lecturer:
+        #type: "array"
+        #items: 
+          #username of lecturer
+          #type: "string"
+  moduleEvent:
+    type: "object"
+    properties:
+      id: 
+        type: "integer"
+      ofModule:
+        type: "integer"
+      startTime:
+        type: "string"
+        format: "date-time"
+      endTime:
+        type: "string"
+        format: "date-time"
+      protocol:
+        type: "string"
+  course: 
+    type: "object"
+    properties:
+      id_course:
+        type: "integer"
+      name_course:
+        type: "integer"
+  courseHasModule:
+    type: "object"
+    properties:
+      id_course:
+        type: "integer"
+      id_module:
+        type: "integer"
+    
+  #courseGroup:
+    #type: "object"
+    #properties:
+      #id:
+        #type: "integer"
+      #name:
+        #type: "string"
+     # members:
+        #type: "array"
+        #items:
+          #usernames of members
+          #type: "string"
+      #optionalModules:
+        #type: "array"
+        #items:
+          #IDs of Modules
+          #type: "integer"
+      #mandatoryModules:
+        #type: "array"
+        #items:
+          #IDs of Modules
+          #type: "integer"
