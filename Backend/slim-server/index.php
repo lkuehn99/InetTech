@@ -11,17 +11,10 @@ require_once __DIR__ . '/lib/Models/Course.php';
 require_once __DIR__ . '/lib/Models/CourseHasModule.php';
 require_once __DIR__ . '/lib/Models/Module.php';
 require_once __DIR__ . '/lib/Models/ModuleEvent.php';
-$config = include(__DIR__ . '/config/config.php');
+include 'config/config.php';
 $app = new Slim\App();
 
 use \Firebase\JWT\JWT;
-
-/**
- * PUT addAbsence
- * Summary: Add absence for user
- * Notes: 
-
- */
  
 $app->GET('/Backend/test', function($request, $oldResponse, $args) {
 			
@@ -45,18 +38,20 @@ $app->GET('/Backend/test', function($request, $oldResponse, $args) {
 
 			$queryParams = $request->getQueryParams();
             $username = $queryParams['username'];
-			//TODO Kreinbihl fragen: Properties in eigene Config 
-			/*$con = mysqli_connect($config['db']['host'], $config['db']['database'], $config['db']['password'], $config['db']['user']); */
-			$con = mysqli_connect('barm.wappworker.de', 'd02c66a3', 'barm-datenbank-2018ii', 'd02c66a3');
-            if(!$con) {
-                die('Could not connect: ' . mysqli_error($con));
-            }
+			$con = establish_dbcon();
 
 			$con->close();
 			$newResponse = $oldResponse->withJson('Juhuu');
 			return $newResponse;
 		
             });
+ 
+ /**
+ * PUT Absence
+ * Summary: Add absence for user
+ * Notes: 
+
+ */
  
 $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
             
@@ -82,12 +77,7 @@ $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
 			$userList = array();
             $queryParams = $request->getQueryParams();
             $username = $queryParams['username'];    
-			$con = mysqli_connect('barm.wappworker.de', 'd02c66a3', 'barm-datenbank-2018ii', 'd02c66a3');
-            if(!$con) {
-                die('Could not connect: ' . mysqli_error($con));
-            }
-
-            mysqli_select_db($con,"d02c66a3");
+			$con = establish_dbcon();
 			$sql="select * from Benutzer where `benutzername`='$username'";
             $result = mysqli_query($con,$sql);
             $row = mysqli_fetch_assoc($result);
@@ -178,7 +168,7 @@ $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
 
 
 /**
- * GET returnListView
+ * GET Calendar
  * Summary: Return list view
  * Notes: 
 
@@ -207,14 +197,9 @@ $app->GET('/Calendar', function($request, $oldResponse, $args) {
             $queryParams = $request->getQueryParams();
 			
 			
-           $con = mysqli_connect('barm.wappworker.de', 'd02c66a3', 'barm-datenbank-2018ii', 'd02c66a3');
-            if(!$con) {
-                die('Could not connect: ' . mysqli_error($con));
-            }
+           $con = establish_dbcon();
             
 			$data = array();
-			mysqli_select_db($con,"d02c66a3");
-			//TODO ggf. zuerst über username Module ID raussuchen  (Über username in Benutzer Tabelle ID-Studiengruppe)
 			
 			$username = $queryParams['username'];
 			$sql = "Select * from Benutzer where `Benutzername`='$username'";
@@ -253,7 +238,7 @@ $app->GET('/Calendar', function($request, $oldResponse, $args) {
             });
 			
 /**
- * GET getUserInfo
+ * GET User
  * Summary: Get Info about User
  * Notes: 
 
@@ -281,12 +266,7 @@ $app->GET('/User', function($request, $oldResponse, $args) {
             $queryParams = $request->getQueryParams();
             $username = $queryParams['username'];    
             
-           $con = mysqli_connect('barm.wappworker.de', 'd02c66a3', 'barm-datenbank-2018ii', 'd02c66a3');
-            if(!$con) {
-                die('Could not connect: ' . mysqli_error($con));
-            }
-
-            mysqli_select_db($con,"d02c66a3");
+			$con = establish_dbcon();
             $sql="select * from Benutzer where `benutzername`='$username'";
             $result = mysqli_query($con,$sql);
             $row = mysqli_fetch_assoc($result);
@@ -327,7 +307,7 @@ $app->GET('/User', function($request, $oldResponse, $args) {
 
 
 /**
- * POST logintoUser
+ * POST Login
  * Summary: Log in as User
  * Notes: 
 
@@ -356,12 +336,7 @@ $app->POST('/User/Login', function($request, $oldResponse, $args) {
             $username = $body['username'];	
 			$password = $body['password'];			
             
-            $con = mysqli_connect('barm.wappworker.de', 'd02c66a3', 'barm-datenbank-2018ii', 'd02c66a3');
-            if(!$con) {
-                die('Could not connect: ' . mysqli_error($con));
-            }
-
-            mysqli_select_db($con,"d02c66a3");
+			$con = establish_dbcon();
             $sql="select * from Benutzer where `benutzername`='$username'";
             $result = mysqli_query($con,$sql);
             $row = mysqli_fetch_assoc($result);
@@ -379,7 +354,6 @@ $app->POST('/User/Login', function($request, $oldResponse, $args) {
 			if(password_verify($password, $stored_password)) {
 			$data = array('Text' => 'Successfully logged in');
 				$newResponse = $oldResponse->withJson($data, 200);
-				// Braucht das Frontend ein Token o.ä.?
 				return $newResponse;
 			}else{
 				$data = array('Errortext' => 'Wrong Password for given Username');
@@ -390,10 +364,6 @@ $app->POST('/User/Login', function($request, $oldResponse, $args) {
             });
 
 function JWT_check_token ($token){
-	define('SECRET','RTFFRjJEOTY0ODg3NUNBRDVGOTlGOTM1RUE5RD==');
-	define('APIKEY','1234567890');
-	define('ALGORITHM','HS256');
-
 	try{
 		$algsAllowed = array(ALGORITHM);
 		$decoded = JWT::decode($token, SECRET, $algsAllowed);
@@ -410,6 +380,17 @@ function JWT_check_token ($token){
 		$res['message'] = $e->getMessage();
 	}
 	return $res;
+}
+
+function establish_dbcon(){
+	$con = mysqli_connect(DBHOST, DB, DBPW, DBUSER);
+            if(!$con) {
+                die('Could not connect: ' . mysqli_error($con));
+            }
+
+            mysqli_select_db($con,DB);
+	return $con;
+	
 }
 
 $app->run();

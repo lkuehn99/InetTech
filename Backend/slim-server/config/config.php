@@ -1,5 +1,9 @@
 <?php
-// configs/local.php
-return array(
-    'db' => ['user' => 'd02c66a3', 'password' => 'barm-datenbank-2018ii', 'database' => 'd02c66a3', 'host' => 'http://barm.wappworker.de/mysqladmin/PMA4/index.php']
-);
+// config/config.php
+	define('SECRET','RTFFRjJEOTY0ODg3NUNBRDVGOTlGOTM1RUE5RD==');
+	define('APIKEY','1234567890');
+	define('ALGORITHM','HS256');
+	define('DBHOST','barm.wappworker.de');
+	define('DB','d02c66a3');
+	define('DBUSER','d02c66a3');
+	define('DBPW','barm-datenbank-2018ii');
