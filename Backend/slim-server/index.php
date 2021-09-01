@@ -46,6 +46,14 @@ $app->GET('/Backend/test', function($request, $oldResponse, $args) {
 		
             });
  
+ $app->GET('/Password', function($request, $oldResponse, $args) {
+			$body = $request->getParsedBody();
+			$password = $body['password'];		
+			$data = password_hash($password, PASSWORD_ARGON2I);
+			$newResponse = $oldResponse->withJson($data);
+			return $newResponse;
+ });
+ 
  /**
  * PUT Absence
  * Summary: Add absence for user
