@@ -44,11 +44,11 @@ VALUES(1, 'Datenbanken'),
 (3, 'Accounting');
 
 INSERT INTO Benutzer(Benutzername, Vorname, Nachname, rolle, Passwort, ID_Studiengruppe)
-VALUES('treinig','Thomas','Reinig','Student','$argon2i$v=19$m=16,t=2,p=1$UHZSTUlNY1JTODlKUFF6TQ$YM5esz6E4ofoxF0jC88kvA',1),
-('nengel','Niklas','Engel','Student','$argon2i$v=19$m=16,t=2,p=1$UHZSTUlNY1JTODlKUFF6TQ$M1QvgKDzeogLWVPpoeXhSw',1),
-('lkuehn','Leon','Kuehn','Student','$argon2i$v=19$m=16,t=2,p=1$UHZSTUlNY1JTODlKUFF6TQ$lsLB2ec6LW6m31hvzS4Yvg',2),
-('fvoss','Frederik','Voss','Student','$argon2i$v=19$m=16,t=2,p=1$UHZSTUlNY1JTODlKUFF6TQ$5NevnsyR2rK1QfqfTh5Jkw',1),
-('dsuffel','Dennis','Suffel','Student','$argon2i$v=19$m=16,t=2,p=1$UHZSTUlNY1JTODlKUFF6TQ$I+3kA9bWMBTF9uZzGrWfzw',2);
+VALUES('treinig','Thomas','Reinig','Student','$argon2i$v=19$m=65536,t=4,p=1$MzA1TFBaWHdrQTRISUFsdQ$6hWvTwAEqO4fBCrkvgh0/VH6iJUTDJYEwxYs5+DNBvc',1),
+('nengel','Niklas','Engel','Student','$argon2i$v=19$m=65536,t=4,p=1$UmZ4U3pOcXNDTmpCWXhsQQ$Q5ruPAukfAoZl3s+YQZCkfrw3XJrn/yNvXABTUCbl0E',1),
+('lkuehn','Leon','Kuehn','Student','$argon2i$v=19$m=65536,t=4,p=1$UE51cEkya2hhMEFsVUMxQw$QR20VYWrAz2AFzbbubsuW1mYb0zSgsyynwxUI44q6tc',2),
+('fvoss','Frederik','Voss','Student','$argon2i$v=19$m=65536,t=4,p=1$ZUY2b3ZZd0h2Nmd6aXp6TA$GR6Zu2jXf0ojnqTQ9/AuUZlBUk9M8k6+n28JczhYW6Q',1),
+('dsuffel','Dennis','Suffel','Student','$argon2i$v=19$m=65536,t=4,p=1$WEh4RU9QV3dzQ2xjZTl3bA$yPGt5jN7RcCSPwADkdsVSxq0MO3K2JujF2QUkPuBjXE',2);
 
 INSERT INTO Vorlesungen(ID_Vorlesung, Beginn, Ende, Prot, ID_Hat)
 VALUES(1, '2021-10-01 08:30:00', '2021-10-01 11:45:00', 'nengel', 3),

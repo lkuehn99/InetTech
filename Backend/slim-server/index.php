@@ -15,54 +15,38 @@ include 'config/config.php';
 $app = new Slim\App();
 
 use \Firebase\JWT\JWT;
- 
-$app->GET('/Backend/test', function($request, $oldResponse, $args) {
-			
-			if(!$request->hasHeader('api-jwt')) {
-				$res['status'] = "error";
-				$res['message'] = utf8_encode("Auth failed - API token missing.");
-				$newResponse = $oldResponse->withStatus(400)->withHeader('Content-Type','application/json');
-				$newResponse->write(json_encode($res));
-				return $newResponse;
-			} else {
-				$apiTokenJWT = $request->getHeader('api-jwt')[0];
-				$result = JWT_check_token($apiTokenJWT);
-				if($result['status'] == 'error') {
-					$res['status'] = 'error';
-					$res['message'] = $result['message'];
-					$newResponse = $oldResponse->withStatus(403)->withHeader('Content-Type','application/json');
-					$newResponse->write(json_encode($res));
-					return $newResponse;
-				}
-			}
-
-			$queryParams = $request->getQueryParams();
-            $username = $queryParams['username'];
-			$con = establish_dbcon();
-
-			$con->close();
-			$newResponse = $oldResponse->withJson('Juhuu');
-			return $newResponse;
-		
-            });
- 
+  
+  // Hash a given Password with or without salt
  $app->GET('/Password', function($request, $oldResponse, $args) {
 			$body = $request->getParsedBody();
 			$password = $body['password'];		
+			$salt = $body['salt'];
+			if($salt != null && strlen($salt)!=0){
+			$data = password_hash($password, PASSWORD_ARGON2I, array("cost" => 7, "salt" => $salt));
+			}else{
 			$data = password_hash($password, PASSWORD_ARGON2I);
+			}
 			$newResponse = $oldResponse->withJson($data);
 			return $newResponse;
  });
  
  /**
  * PUT Absence
- * Summary: Add absence for user
  * Notes: 
-
+ * Input: Lecture Name and Modul ID for which the students wants to excuse himself, JWT Token. 
+ * Summary: Add absence for user for the given event and updates all record keeper entries accordingly.
+ * Output: Respone Text
+ * Error codes: 
+ * 400 - JWT Token Missing; Given User not Record Keeper for given event; not currently the day of 
+ * the event;
+ * 403 - faulty JWT Token 
+ * 500 - No Database Entry for given Username;  Database Error while Upadating Record Keepers
+ * 200 - Success
  */
  
 $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
             
+			// JWT Token Verification
 			if(!$request->hasHeader('api-jwt')) {
 				$res['status'] = "error";
 				$res['message'] = utf8_encode("Auth failed - API token missing.");
@@ -90,13 +74,14 @@ $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
             $result = mysqli_query($con,$sql);
             $row = mysqli_fetch_assoc($result);
 			
-			
+			// Return Error in case username exists zero or several times in database
 			if(mysqli_num_rows($result)!=1){
 				$data = array('Errortext' => 'Inambigious User Database Entrys');
 				$newResponse = $oldResponse->withJson($data, 500);
 				return $newResponse;
 			}
 			
+			// Check if theres an Event for the given Module for which the user is the record keeper, if not return an error
 			$idStudiengruppe= $row['ID_Studiengruppe'];
 			$moduleEventID = $queryParams['moduleEventID'];
 			$sql = "SELECT * FROM Benutzer JOIN Vorlesungen ON `Prot` = `Benutzername` WHERE `Prot` = '$username' AND `ID_Vorlesung` = '$moduleEventID'";
@@ -106,7 +91,7 @@ $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
 			if(mysqli_num_rows($result)==0){
 				$con->close();
 				$data = array('Errortext' => 'Given User not record keeper for given Lecture');
-				$newResponse = $oldResponse->withJson($data, 500);
+				$newResponse = $oldResponse->withJson($data, 400);
 				return $newResponse;
 			}
 			// check if the given lecture is today, if not return an error
@@ -118,10 +103,10 @@ $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
 			if(strcmp($date, $dateToday)!=0){
 				$con->close();
 				$data = array('Errortext' => 'You can only submit your absence on the day of the lecture');
-				$newResponse = $oldResponse->withJson($data, 500);
+				$newResponse = $oldResponse->withJson($data, 400);
 				return $newResponse;
 			}
-			// Reihenfolge
+			// Create an ordered List of Users for the given Module
 			$sql = "SELECT * FROM Benutzer Where `ID_Studiengruppe` = (SELECT ID_Studiengruppe from Benutzer WHERE `Benutzername` = '$username') order by nachname";
 			$result = mysqli_query($con,$sql);
 			while ($row = mysqli_fetch_array($result)) {
@@ -129,7 +114,7 @@ $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
 				array_push($userList, $currUser);
             }
 
-			// weiter bei VorlListe
+			// Create an ordered List of Lectures for which new Record Keepers will have to be assigned
 			$sqlLectureList = "SELECT * From Vorlesungen JOIN hat  ON Vorlesungen.`ID_Hat` = hat.`ID_Hat` WHERE hat.`ID_Studiengruppe` = '$idStudiengruppe' order by Vorlesungen.`Beginn`";
 			$resultLectureList = mysqli_query($con,$sqlLectureList);
 			
@@ -141,6 +126,7 @@ $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
 			$key = array_search($moduleEventID, $lectureList);
 			$pos = array_search($key, array_keys($lectureList));
 			
+			// remove Events which took place in the past 
 			if($pos > 0) {
 				$lectureList= array_slice($lectureList,$pos,count($lectureList),false);
 			}
@@ -148,7 +134,8 @@ $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
 			$key = array_search($username, $userList);
 			$pos = array_search($key, array_keys($userList));
 			$countUserList = count($userList);
-
+			
+			// iterate through users and assign a new record keeper for each event in the previously created list
 			for($i = 0; $i < count($lectureList); $i++){
 				
 				$pos += 1;
@@ -177,12 +164,18 @@ $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
 
 /**
  * GET Calendar
- * Summary: Return list view
  * Notes: 
-
+ * Input: User for which Info should be returned, JWT-Token
+ * Summary: Return a List of all Events which the given User will have to attend. 
+ * Output: List of events, each including the module Name, a start time, end time and the record keeper. 
+ * Error Codes: 
+ * 400 - JWT Token Missing 
+ * 403 - faulty JWT Token 
+ * 200 - Success
  */
 $app->GET('/Calendar', function($request, $oldResponse, $args) {
 
+			// JWT Token Verification
 			if(!$request->hasHeader('api-jwt')) {
 				$res['status'] = "error";
 				$res['message'] = utf8_encode("Auth failed - API token missing.");
@@ -218,6 +211,7 @@ $app->GET('/Calendar', function($request, $oldResponse, $args) {
 			
 			$sqlPrep="select * from hat where `id_studiengruppe`='$course'";
 			$resultPrep = mysqli_query($con,$sqlPrep); 
+			// get a List of all modules and corresponding data for the given user using his course 
 			while ($rowPrep = mysqli_fetch_array($resultPrep)) {
 				$hatID = utf8_encode($rowPrep['ID_Hat']);
 				$moduleID = utf8_encode($rowPrep['ID_Modul']);
@@ -247,12 +241,19 @@ $app->GET('/Calendar', function($request, $oldResponse, $args) {
 			
 /**
  * GET User
- * Summary: Get Info about User
- * Notes: 
-
+ * Notes:
+ * Input: User for which Info should be returned, JWT-Token
+ * Summary: Get Info about a given User
+ * Output: Info about the user including the first and last name, the username, the assigned role aswell as the course
+ * Error Codes:
+ * 400 - JWT Token Missing 
+ * 403 - faulty JWT Token 
+ * 500 - User exists several or zero times in the database
+ * 200 - Success
  */
 $app->GET('/User', function($request, $oldResponse, $args) {
             
+			// JWT Token Verification
 			if(!$request->hasHeader('api-jwt')) {
 				$res['status'] = "error";
 				$res['message'] = utf8_encode("Auth failed - API token missing.");
@@ -286,6 +287,8 @@ $app->GET('/User', function($request, $oldResponse, $args) {
 				$newResponse = $oldResponse->withJson($data, 500);
 				return $newResponse;
 			}
+			
+			// read all available information about the user and return it
             $vorname = utf8_encode($row['Vorname']);
             $nachname = utf8_encode($row['Nachname']);
             $rolle = $row['rolle'];
@@ -299,14 +302,6 @@ $app->GET('/User', function($request, $oldResponse, $args) {
             
 			$con->close();
 			
-			//TODO Warum klappt das nicht
-			/*$baUser = new BAUser();
-			$baUser->$firstName = $vorname;
-			$baUser->$lastName = $nachname;
-			$baUser->$username = $username;
-			//$baUser->$password = "";
-			$baUser->$role = $rolle;
-			$baUser->$course = $nameStudiengruppe;*/
 			$data = array('firstName' => $vorname, 'lastName' => $nachname, 'username' => $username, 'role' => $rolle, 'course' => $nameStudiengruppe);
 			
 			$newResponse = $oldResponse->withJson($data);
@@ -316,30 +311,17 @@ $app->GET('/User', function($request, $oldResponse, $args) {
 
 /**
  * POST Login
- * Summary: Log in as User
  * Notes: 
-
+ * Input: Username and Password
+ * Summary: Log in to a given User
+ * Output: Respone Text
+ * Error Codes: 
+ * 400 - Given User does not exist
+ * 403 - Wrong Password for given User
+ * 200 - Success
  */
 $app->POST('/User/Login', function($request, $oldResponse, $args) {
             
-			if(!$request->hasHeader('api-jwt')) {
-				$res['status'] = "error";
-				$res['message'] = utf8_encode("Auth failed - API token missing.");
-				$newResponse = $oldResponse->withStatus(400)->withHeader('Content-Type','application/json');
-				$newResponse->write(json_encode($res));
-				return $newResponse;
-			} else {
-				$apiTokenJWT = $request->getHeader('api-jwt')[0];
-				$result = JWT_check_token($apiTokenJWT);
-				if($result['status'] == 'error') {
-					$res['status'] = 'error';
-					$res['message'] = $result['message'];
-					$newResponse = $oldResponse->withStatus(403)->withHeader('Content-Type','application/json');
-					$newResponse->write(json_encode($res));
-					return $newResponse;
-				}
-			}
-
 			$body = $request->getParsedBody();
             $username = $body['username'];	
 			$password = $body['password'];			
@@ -352,15 +334,15 @@ $app->POST('/User/Login', function($request, $oldResponse, $args) {
 			if(mysqli_num_rows($result)==0){
 				$con->close();
 				$data = array('Errortext' => 'Given User does not exist');
-				$newResponse = $oldResponse->withJson($data, 500);
+				$newResponse = $oldResponse->withJson($data, 400);
 				return $newResponse;
 			}
 			
 			$stored_password = utf8_encode($row['Passwort']);
 			$con->close();
-			// Password verify automatically checks for the used algorithm
+			// hash password and compare it to the given hash, automatically checks for used hashing method
 			if(password_verify($password, $stored_password)) {
-			$data = array('Text' => 'Successfully logged in');
+			$data = array('Text' => 'Successfully logged in', 'JWT-TOKEN' => JWTTOKEN);
 				$newResponse = $oldResponse->withJson($data, 200);
 				return $newResponse;
 			}else{
@@ -371,6 +353,8 @@ $app->POST('/User/Login', function($request, $oldResponse, $args) {
 			
             });
 
+
+// Check a given JWT Token by decoding it 
 function JWT_check_token ($token){
 	try{
 		$algsAllowed = array(ALGORITHM);
@@ -390,6 +374,7 @@ function JWT_check_token ($token){
 	return $res;
 }
 
+// try establishing a database connection
 function establish_dbcon(){
 	$con = mysqli_connect(DBHOST, DB, DBPW, DBUSER);
             if(!$con) {
