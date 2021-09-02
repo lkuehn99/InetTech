@@ -5,12 +5,6 @@
  */
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/lib/Models/BALoginUser.php';
-require_once __DIR__ . '/lib/Models/BAUser.php';
-require_once __DIR__ . '/lib/Models/Course.php';
-require_once __DIR__ . '/lib/Models/CourseHasModule.php';
-require_once __DIR__ . '/lib/Models/Module.php';
-require_once __DIR__ . '/lib/Models/ModuleEvent.php';
 include 'config/config.php';
 $app = new Slim\App();
 
