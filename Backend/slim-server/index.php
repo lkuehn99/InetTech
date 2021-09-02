@@ -139,13 +139,18 @@ $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
 
 				$nextProt = $userList[$pos];
 				$sql = "UPDATE Vorlesungen SET `Prot` = '$nextProt' where `ID_Vorlesung` = '$lectureList[$i]'";
-
+				$sqlTrans = "START TRANSACTION;";
+				mysqli_query($con,$sqlTrans);
 				if(mysqli_query($con,$sql) === false){
+					$sqlTrans = "ROLLBACK;";
+					mysqli_query($con,$sqlTrans);
 					$con->close();
 					$data = array('Errortext' => 'Error when updating lectures');
 					$newResponse = $oldResponse->withJson($data, 500);
 					return $newResponse;
 				}
+				$sqlTrans = "COMMIT;";	
+				mysqli_query($con,$sqlTrans);
 
 			}
 			
