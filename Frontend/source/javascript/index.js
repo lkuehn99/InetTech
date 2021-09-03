@@ -1,10 +1,10 @@
-var username;
+var usernameGlobal;
 var userInfo;
 
 function logintoUser(){
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
-    var json = JSON.stringify({username: this.username, password: password});
+    var json = JSON.stringify({username: username, password: password});
     if (window.XMLHttpRequest)
     {
         // AJAX nutzen mit IE7+, Chrome, Firefox, Safari, Opera
@@ -13,9 +13,9 @@ function logintoUser(){
     xmlhttp.onreadystatechange=function(){
         if (xmlhttp.readyState==4){
             if (xmlhttp.status==200){
-                username  = document.getElementById("username").value;
+                usernameGlobal  = document.getElementById("username").value;
             }else if (xmlhttp.status==405){
-                username = null;
+                usernameGlobal = null;
                 console.log("fehler 400");
             }
         }
@@ -28,13 +28,13 @@ function logintoUser(){
 }
 
 function getUserInfo(){
-    var json = JSON.stringify({username: username});
+    var json = JSON.stringify({username: usernameGlobal});
     if (window.XMLHttpRequest)
     {
         // AJAX nutzen mit IE7+, Chrome, Firefox, Safari, Opera
         xmlhttp=new XMLHttpRequest();
     }
-    xmlhttp.onreadystatechanged=function(){
+    xmlhttp.onreadystatechange=function(){
         if (xmlhttp.readyState==4){
             if (xmlhttp.status==200){
                 userInfo = JSON.parse(xmlhttp.responseText);
@@ -49,8 +49,8 @@ function getUserInfo(){
     xmlhttp.send();
 }
 
-function returnListView(username){
-    var json = JSON.stringify({username: username});
+function returnListView(){
+    var json = JSON.stringify({username: usernameGlobal, studiengruppeID: userInfo[studiengruppeID]});
     if (window.XMLHttpRequest)
     {
         // AJAX nutzen mit IE7+, Chrome, Firefox, Safari, Opera
@@ -61,9 +61,10 @@ function returnListView(username){
         // AJAX mit IE6, IE5
         xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
     }
-    xmlhttp.onreadystatechanged=function(){
+    xmlhttp.onreadystatechange=function(){
         if (xmlhttp.readyState==4){
             if (xmlhttp.status==200){
+                var data = JSON.parse(xmlhttp.responseText);
                 //document.getElementById("zelle1").innerText = xmlhttp.responseText;
             }else if (xmlhttp.status==405){
                 window.alert("Invalid input!");
@@ -71,6 +72,8 @@ function returnListView(username){
         }
     }
     xmlhttp.open("GET","index.php/Calendar?"+json,true);
+    xmlhttp.setRequestHeader("Authorization", "Basic d2l3czE4aWk6YmFybS13ZWItMjAxOGlp");
+    xmlhttp.setRequestHeader("api-jwt", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRlbm5pcyBIZXJybWFubiIsImV4cCI6MTY3NTg3NDQ1N30.xju7pfW3-zDPOVXoztwb2TZMAOH70U9PIPOiKtAYWgs");
     xmlhttp.send();
 }
 
@@ -78,8 +81,8 @@ function returnListView(username){
 //    return data;
 //
 
-function addAbsence(){
-    var json = JSON.stringify({username: username});
+function addAbsence(moduleEventID){
+    var json = JSON.stringify({username: usernameGlobal, moduleEventID: moduleEventID});
     if (window.XMLHttpRequest)
     {
         // AJAX nutzen mit IE7+, Chrome, Firefox, Safari, Opera
@@ -90,7 +93,7 @@ function addAbsence(){
         // AJAX mit IE6, IE5
         xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
     }
-    xmlhttp.onreadystatechanged=function(){
+    xmlhttp.onreadystatechange=function(){
         if (xmlhttp.readyState==4){
             if (xmlhttp.status==200){
                 //document.getElementById("zelle1").innerText = xmlhttp.responseText;
@@ -100,5 +103,7 @@ function addAbsence(){
         }
     }
     xmlhttp.open("PUT","Absence?"+json,true);
+    xmlhttp.setRequestHeader("Authorization", "Basic d2l3czE4aWk6YmFybS13ZWItMjAxOGlp");
+    xmlhttp.setRequestHeader("api-jwt", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRlbm5pcyBIZXJybWFubiIsImV4cCI6MTY3NTg3NDQ1N30.xju7pfW3-zDPOVXoztwb2TZMAOH70U9PIPOiKtAYWgs");
     xmlhttp.send();
 }
