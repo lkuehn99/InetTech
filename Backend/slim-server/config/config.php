@@ -1,5 +1,10 @@
 <?php
-// configs/local.php
-return array(
-    'db' => ['user' => 'd02c66a3', 'password' => 'barm-datenbank-2018ii', 'database' => 'd02c66a3', 'host' => 'http://barm.wappworker.de/mysqladmin/PMA4/index.php']
-);
+// config/config.php
+	define('SECRET','RTFFRjJEOTY0ODg3NUNBRDVGOTlGOTM1RUE5RD==');
+	define('APIKEY','1234567890');
+	define('ALGORITHM','HS256');
+	define('DBHOST','barm.wappworker.de');
+	define('DB','d02c66a3');
+	define('DBUSER','d02c66a3');
+	define('DBPW','barm-datenbank-2018ii');
+	define('JWTTOKEN','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbHFwVUVsUm9aUHozWHVYVnU2dUk2bDNUZ3Bqck1kUEtrNUN4czJZNkFIaHY5WlRDbUdkQmhRWmd3b1BPTVBMWHRUSW4zTGNXTUtvY2VFZDI3eW9uVE9pOXEyWTZ3OURLRGFMekZWR09HYWEyV1FGWVBHTWNFZGE1aEZ0ZjVWUjBrdTVFdExYbVpEMTEyV3IiLCJuYW1lIjoiRGVubmlzIEhlcnJtYW5uIiwiZXhwIjoxNDc1ODc4MzU3LCJpYXQiOjE0NzU4NzQ0NTd9.Q2aZGSFIw6X9PfhXyoWe7EZG5ZqPUIKa81Du87JSB_g');
