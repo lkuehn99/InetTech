@@ -224,12 +224,14 @@ $app->GET('/Calendar', function($request, $oldResponse, $args) {
 				
 				while ($row = mysqli_fetch_array($result)) {
 				// Data to display 
+				$id_module = utf8_encode($row['ID_Vorlesung']);
 				$moduleName = utf8_encode($rowModuleName['Name']);
+				
 				$start = utf8_encode($row['Beginn']); 
 				$end = utf8_encode($row['Ende']); 
 				$protocol = utf8_encode($row['Prot']);
 				
-				array_push($data, array('Modul' => $moduleName, 'Startzeit' => $start, 'Endzeit' => $end, 'Protokollant' => $protocol));
+				array_push($data, array('ID' => $id_module, 'Modul' => $moduleName, 'Startzeit' => $start, 'Endzeit' => $end, 'Protokollant' => $protocol));
 				}
 			}
 			
