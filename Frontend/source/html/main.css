@@ -1,0 +1,565 @@
+/* CSS3- Genereller Style */ 
+@import url('https://fonts.googleapis.com/css?family=Abel|Roboto+Condensed');
+
+body{
+	background-color:#fff;
+	font-size: 100%; /* Mutter für alle Groeßenverhaeltnisse*/
+	margin: 0em;
+	padding: 0em;
+	}
+
+form {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 0.1em; /* Schrift Groesse Basis 100%-40Px */
+	line-height: 0.2em; /* Hoehe des Headers Basis 2.5em-152px */
+	font-weight: 100; /* Schrift dicke */
+	color: #152469;
+	margin: 0em;
+	text-align:center;
+	display:grid;
+}
+
+
+
+.tg {
+	border-collapse: collapse;
+	border-spacing: 0;
+	
+}
+
+.tg td {
+	font-family: Arial, sans-serif;
+	font-size: 14px;
+	padding: 10px 5px;
+	border-style: solid;
+	border-width: 1px;
+	overflow: hidden;
+	word-break: normal;
+}
+
+.tg th {
+	font-family: Arial, sans-serif;
+	font-size: 14px;
+	font-weight: normal;
+	padding: 10px 5px;
+	border-style: solid;
+	border-width: 1px;
+	overflow: hidden;
+	word-break: normal;
+}
+
+
+
+
+
+#button1 {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 0.1em; /* Schrift Groesse Basis 100%-40Px */
+	line-height: 0.2em; /* Hoehe des Headers Basis 2.5em-152px */
+	font-weight: 100; /* Schrift dicke */
+	color: #152469;
+	margin: 0em;
+}
+#button {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 2.5em; /* Schrift Groesse Basis 100%-40Px */
+	line-height: 3.8em; /* Hoehe des Headers Basis 2.5em-152px */
+	font-weight: 100; /* Schrift dicke */
+	color: #152469;
+	margin: 0,5em;
+}
+
+h1{
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 2.5em; /* Schrift Groesse Basis 100%-40Px */
+	line-height: 3.8em;/* Hoehe des Headers Basis 2.5em-152px */
+	font-weight: 100; /* Schrift dicke */
+	color: #000;
+	margin: 0em;
+	}
+	 
+ h2{
+	 font-family: Helvetica, Arial, sans-serif;
+	font-size: 1.563em; /* Hoehe des Headers Basis 100%-25px */
+	line-height: 1.8em; /* Hoehe des Headers Basis 1.563em-45px */
+	font-weight: 100;
+	color: #152469;
+	margin: 0em;
+	padding: 1.5em ; /* Innerer Abstand Basis 1.563em-37px */
+	text-align: center;
+ 	}	
+
+ h3{
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 1.563em;  /* Hoehe des Headers Basis 100%-25px */
+	line-height: 1.8em; /* Hoehe des Headers Basis 1.563em-45px */
+	font-weight: 100;
+	color: #fff;
+	margin: 0em;
+	padding: 1.5em; /* Innerer Abstand Basis 1.563em-37px */
+	text-align: justify;
+	}
+
+ ul{
+	margin: 0px;
+	padding: 0px;
+	} 
+
+li{
+	list-style-type: none;
+	font-family: Helvetica, Arial, sans-serif;
+	font-weight: 100;
+	color: #152469;
+	line-height: 1.25em; /* Hoehe der Schrift Basis 100%-20px */
+	padding: 0em;
+	
+	}
+ol{
+	display: block;
+	
+}
+ol li{
+	list-style-type: square;
+	font-family: Helvetica, Arial, sans-serif;
+	font-weight: 100;
+	color: #152469;
+	line-height: 1.25em; /* Hoehe der Schrift Basis 100%-20px */
+	padding: 0em;
+	
+	}	
+	
+p{
+	
+	font-family: Helvetica, Arial, sans-serif;
+	font-weight: 100;
+	color: #152469;
+	line-height: 1.25em; /* Hoehe der Schrift Basis 100%-20px */
+	padding: 0em;
+	
+	}	
+
+img{
+	width: 85.0%;
+	height: auto; 
+	max-width: 100%;
+	}
+
+video{
+    width: 90%;
+	height: auto; 
+	max-width: 100%;
+	border-radius: 5px;
+	}
+
+a{
+	text-decoration: none;
+	}
+
+/*Header*/
+
+header {
+	display: block;
+	background-color: #c6e2ff;
+	text-align: center;
+}
+
+/*Navigation*/
+
+nav{
+	display: block;
+	height: 2.5em; /* Hoehe der Navigationsleite Basis 100%-40px */
+	background:#2184c5;
+	text-align: center;
+	}
+nav ul{
+	display:block;
+	}
+
+nav ul li{
+	display: inline;
+	margin: 0em 1.88em 0em 1.88em; /* Basis 100%-30px(1.88em) Abstand zwischen den einzelnen Links */
+	}
+
+nav ul li a{
+	color: #fff;
+	font-size: 1.125em; /* Groesse der Schrift Basis 100%-18px */
+	line-height: 2.5em; /* Basis 1.125em(18px)-45px */
+	padding: 0.667em 0.938em 0.375em 0.938em; /* Groesse der Schaltflaeche Basis 1.125em-12px 16px 6px 16px */
+	transition:background 0.5s;
+	-webkit-transition: background 0.5s;
+	}
+
+nav ul li a:hover{
+	background-color: #0FA1FF;
+	border-bottom: 0.188em solid #0B3F60; /* Strich unterhalb der Navigation 3px dick */
+	}
+
+nav ul li a.active{
+	border-bottom: 0.188em solid #af1d12; /* aktiver Zustand Strich unterhalb der Navigation 3px dick */
+	}
+/* Ende Navigation */
+
+
+img.zoom1 { /* Bilderzoom in CONTENT 1 */
+	transition: transform 0.2s;
+	}
+
+img.zoom1:hover {/* Bilderzoom in CONTENT 1 */
+	transform: scale(2.0, 2.0);
+	}
+#icon{
+	vertical-align:middle;
+	max-width: 24px !important;
+	max-height: 24px;
+	box-shadow: none !important;
+}
+
+#audio_file{
+	width: 90%;
+	}
+
+#Desktop{
+		display: none;
+	}
+
+#canvas {
+		width: 98.5%;
+		height: 100%;
+		border: 2px solid #000;
+		border-radius: 5px;	
+	}
+
+
+
+/*on Top Bar*/
+#menubar{
+	display: block;
+	background: #fff;
+	}
+
+
+#menubar ul {
+	display: block;
+	width: 2.0em; /* basis 100%-32px */
+	padding: 1.0em; /* basis 100%-16px */ /* höhe der Menubar 64px */
+	}
+
+#menubar ul li{
+	display: inline;
+	}
+
+/*menubar für mobil*/
+#menubar ul li a.menubutton{
+display:none;
+	}
+
+/*Content*/
+
+
+#content{
+	display: block;
+	text-align:center;
+	width: 90%;
+	max-width: 980px;
+	margin:1.25em auto 1.25em auto; /* Abstand um den Text Basis 100%-20px,auto */
+	padding:0em;
+	}
+#content4, #content3 {
+	display: block;
+	text-align: center;
+	width: 90%;
+	max-width: 980px;
+	margin: 1.25em auto 1.25em auto; /* Abstand um den Text Basis 100%-20px,auto */
+	padding: 0em;
+}	
+#form2 {
+	display: block;
+	text-align: center;
+	width: 90%;
+	max-width: 980px;
+	margin: 1.25em auto 1.25em auto; /* Abstand um den Text Basis 100%-20px,auto */
+	padding: 0em;
+}
+#Rolle {
+	display: block;
+	text-align: center;
+	width: 90%;
+	max-width: 980px;
+	margin: 1.25em auto 1.25em auto;
+}
+
+/*Footer*/
+
+#footer{
+	display:block;
+	background-color: #152469;
+	text-align: center;
+	}
+
+/*Rahmen für Footer*/
+#footer ul{
+	display: block;
+	width: 50%;
+	text-align: left;
+	
+	}
+
+#footer ul li {
+
+	display: inline;
+	font-size: 0.8em; /* Basis100%-12px */
+	line-height: 2.8em; /* Basis 0.8em-33px */
+	color: #fff; /* farbe des Inhalts des Footer */
+	padding: 0em 0.625em 0em 0.625em; /* entspricht Basis 100%- 0px 10px 0px 10px  */
+	}
+
+#kalender {
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+}
+
+	#calendar tr, #calendar tbody {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: repeat(7, 1fr);
+		width: 100%;
+	}
+
+caption {
+	text-align: center;
+	grid-column: 1 / -1;
+	font-size: 130%;
+	font-weight: bold;
+	padding: 10px 0;
+}
+
+#calendar a {
+	color: #8e352e;
+	text-decoration: none;
+}
+
+#calendar td, #calendar th {
+	padding: 5px;
+	box-sizing: border-box;
+	border: 1px solid #ccc;
+}
+
+#calendar .weekdays {
+	background: #8e352e;
+}
+
+
+	#calendar .weekdays th {
+		text-align: center;
+		text-transform: uppercase;
+		line-height: 20px;
+		border: none !important;
+		padding: 10px 6px;
+		color: #fff;
+		font-size: 13px;
+	}
+
+#calendar td {
+	min-height: 180px;
+	display: flex;
+	flex-direction: column;
+}
+
+#calendar .days li:hover {
+	background: #d3d3d3;
+}
+
+#calendar .date {
+	text-align: center;
+	margin-bottom: 5px;
+	padding: 4px;
+	background: #333;
+	color: #fff;
+	width: 20px;
+	border-radius: 50%;
+	flex: 0 0 auto;
+	align-self: flex-end;
+}
+
+#calendar .event {
+	flex: 0 0 auto;
+	font-size: 13px;
+	border-radius: 4px;
+	padding: 5px;
+	margin-bottom: 5px;
+	line-height: 14px;
+	background: #e4f2f2;
+	border: 1px solid #b5dbdc;
+	color: #009aaf;
+	text-decoration: none;
+}
+
+#calendar .event-desc {
+	color: #666;
+	margin: 3px 0 7px 0;
+	text-decoration: none;
+}
+
+#calendar .other-month {
+	background: #f5f5f5;
+	color: #666;
+}
+
+/* ============================
+				Mobile Responsiveness
+   ============================*/
+
+
+@media(max-width: 768px) {
+
+	#calendar .weekdays, #calendar .other-month {
+		display: none;
+	}
+
+	#calendar li {
+		height: auto !important;
+		border: 1px solid #ededed;
+		width: 100%;
+		padding: 10px;
+		margin-bottom: -1px;
+	}
+
+	#calendar, #calendar tr, #calendar tbody {
+		grid-template-columns: 1fr;
+	}
+
+		#calendar tr {
+			grid-column: 1 / 2;
+		}
+
+		#calendar .date {
+			align-self: flex-start;
+		}
+
+	/*mobile style*/
+	@media screen and (max-width:800px) {
+		body {
+			font-size: 93.8%;
+			display: block;
+		}
+
+		nav img {
+			max-width: 25px;
+			vertical-align: middle;
+			margin-left: 5px;
+		}
+
+		#myRange, #value {
+			display: none;
+		}
+
+		#Desktop {
+			display: block;
+			text-align: left;
+			color: #af1d12;
+		}
+
+		#canvas {
+			display: none;
+		}
+	}
+
+
+
+	@media screen and (max-width:600px) {
+		#content aside, #content article, #content3 aside, #content3 article {
+			width: 94.3%;
+			display: block;
+			margin: 0.625em 0em 0.625em 0em; /* entspricht Basis 100%- 0px 10px 0px 10px  */
+		}
+
+		#myRange, #value {
+			display: none;
+		}
+
+		#Desktop {
+			display: block;
+			text-align: left;
+			color: #af1d12;
+		}
+
+		#canvas {
+			display: none;
+		}
+	}
+
+	@media screen and (max-width:600px) {
+		#content aside {
+			width: 100%;
+			display: block;
+			margin: 0em;
+		}
+
+		img.zoom1:hover { /* Bei mobile nicht vergrößern */
+			transform: none;
+		}
+
+		#myRange, #value {
+			display: none;
+		}
+
+		#Desktop {
+			display: block;
+			text-align: left;
+			color: #af1d12;
+		}
+
+		#canvas {
+			display: none;
+		}
+	}
+
+	@media screen and (max-width:550px) {
+		body {
+			font-size: 87.5%;
+		}
+
+		#canvas {
+			display: none;
+		}
+
+		#myRange, #value {
+			display: none;
+		}
+
+		#Desktop {
+			display: block;
+			text-align: left;
+			color: #af1d12;
+		}
+
+		img.zoom1:hover { /* Bei mobile nicht vergrößern */
+			transform: none;
+		}
+
+		#menubar {
+			background: #af1d12;
+		}
+
+			#menubar ul li a.menubutton {
+				display: block;
+			}
+
+
+		nav {
+			display: none;
+			height: auto;
+		}
+
+			nav ul li {
+				display: block;
+				margin: 0em 0em 0.3em 0em;
+			}
+		#app-calendar {
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+			grid-template-rows: repeat(5, 1fr);
+			height: 70%;
+		}
+			}	}
