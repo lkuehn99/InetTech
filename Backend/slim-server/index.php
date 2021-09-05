@@ -64,8 +64,10 @@ $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
             $queryParams = $request->getQueryParams();
             $username = $queryParams['username'];    
 			$con = establish_dbcon();
-			$sql="select * from Benutzer where `benutzername`='$username'";
-            $result = mysqli_query($con,$sql);
+			$sql=$con->prepare("select * from Benutzer where `benutzername`=?");
+			$sql->bind_param('s', $username);
+			$sql->execute();
+			$result = $sql->get_result();
             $row = mysqli_fetch_assoc($result);
 			
 			// Return Error in case username exists zero or several times in database
@@ -78,8 +80,12 @@ $app->PUT('/Calendar/Absence', function($request, $oldResponse, $args) {
 			// Check if theres an Event for the given Module for which the user is the record keeper, if not return an error
 			$idStudiengruppe= $row['ID_Studiengruppe'];
 			$moduleEventID = $queryParams['moduleEventID'];
-			$sql = "SELECT * FROM Benutzer JOIN Vorlesungen ON `Prot` = `Benutzername` WHERE `Prot` = '$username' AND `ID_Vorlesung` = '$moduleEventID'";
-			$result = mysqli_query($con,$sql);
+
+			$sql=$con->prepare("SELECT * FROM Benutzer JOIN Vorlesungen ON `Prot` = `Benutzername` WHERE `Prot` = ? AND `ID_Vorlesung` = ?");
+			$sql->bind_param('si', $username, $moduleEventID);
+			$sql->execute();
+			$result = $sql->get_result();
+			
             $row = mysqli_fetch_assoc($result);
 
 			if(mysqli_num_rows($result)==0){
@@ -202,8 +208,10 @@ $app->GET('/Calendar', function($request, $oldResponse, $args) {
 			$data = array();
 			
 			$username = $queryParams['username'];
-			$sql = "Select * from Benutzer where `Benutzername`='$username'";
-			$result = mysqli_query($con,$sql);
+			$sql=$con->prepare("select * from Benutzer where `benutzername`=?");
+			$sql->bind_param('s', $username);
+			$sql->execute();
+			$result = $sql->get_result();
 			$row = mysqli_fetch_assoc($result);
 			$course=utf8_encode($row['ID_Studiengruppe']);
 			
@@ -277,8 +285,12 @@ $app->GET('/User', function($request, $oldResponse, $args) {
             $username = $queryParams['username'];    
             
 			$con = establish_dbcon();
-            $sql="select * from Benutzer where `benutzername`='$username'";
-            $result = mysqli_query($con,$sql);
+			
+			$sql=$con->prepare("select * from Benutzer where `benutzername`=?");
+			$sql->bind_param('s', $username);
+			$sql->execute();
+			$result = $sql->get_result();
+			
             $row = mysqli_fetch_assoc($result);
 			
 			// Case in which user exists several times in database
