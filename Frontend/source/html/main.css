@@ -216,6 +216,23 @@ nav {
             margin: 0.5em;
         }
 
+#protokollul {
+    border: solid;
+    border-block-color: #152469;
+    border-radius: 15px;
+    background-color: azure;
+    padding: 1em;
+    margin: 1em;
+}
+    #protokollul li {
+        padding: 1em;
+        border: solid 0.1em;
+        border-color: #152469;
+        border-radius: 5px;
+        margin: 0.5em;
+    }
+
+
 #content {
     display: block;
     text-align: center;
