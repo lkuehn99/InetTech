@@ -14,6 +14,7 @@
     <link href="main.css" rel="stylesheet" type="text/css" />
     <script src="https://code.jquery.com/jquery-1.10.1.min.js"
             type="text/javascript"></script>
+    <script src="index.js" type="text/javascript"></script>
 
 
     <script type="text/javascript">$(document).ready(function () {
@@ -26,7 +27,7 @@
 
 </head>
 <!-- visible content -->
-<body>
+<body onload="getUserInfo()">
     <section id="menubar">
         <ul>
 
@@ -77,8 +78,8 @@
                 <li id="nname"></li>
             </ul>
             <ul id="listinfo">
-                <li>E-Mail:</li>
-                <li id="email"></li>
+                <li>Benutzername:</li>
+                <li id="benutzername"></li>
             </ul>
             <ul id="listinfo">
                 <li>Studienkurs:</li>
