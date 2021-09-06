@@ -51,8 +51,8 @@ VALUES('treinig','Thomas','Reinig','Student','$argon2i$v=19$m=65536,t=4,p=1$MzA1
 ('dsuffel','Dennis','Suffel','Student','$argon2i$v=19$m=65536,t=4,p=1$WEh4RU9QV3dzQ2xjZTl3bA$yPGt5jN7RcCSPwADkdsVSxq0MO3K2JujF2QUkPuBjXE',2);
 
 INSERT INTO Vorlesungen(ID_Vorlesung, Beginn, Ende, Prot, ID_Hat)
-VALUES(1, '2021-10-01 08:30:00', '2021-10-01 11:45:00', 'nengel', 3),
-(2, '2021-10-02 08:30:00', '2021-10-02 11:45:00', 'lkuehn', 2),
+VALUES(1, '2021-09-06 08:30:00', '2021-09-06 11:45:00', 'nengel', 3),
+(2, '2021-09-07 08:30:00', '2021-09-07 11:45:00', 'lkuehn', 2),
 (3, '2021-08-30 08:30:00', '2021-10-03 11:45:00', 'treinig', 1),
 (4, '2021-10-06 12:45:00', '2021-10-06 16:00:00', 'dsuffel', 2),
 (5, '2021-10-07 12:45:00', '2021-10-07 16:00:00', 'fvoss', 3),
